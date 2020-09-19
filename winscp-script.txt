@@ -1,0 +1,3 @@
+open clinictech@www.scilpru.in.th
+synchronize remote "build" "/admin" -delete
+exit
