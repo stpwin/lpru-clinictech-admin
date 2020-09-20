@@ -36,3 +36,29 @@
     transform: rotate(360deg);
   }
 }
+
+.fit-last-cell tr td:last-child{
+    width:1%;
+    white-space:nowrap;
+}
+
+.button-group button+button {
+  margin-left: 5px;
+}
+
+.table td, .table th {
+    vertical-align: middle!important;
+}
+
+table table {
+  margin-bottom: 0!important;
+  /* width: 95%!important; */
+  display: inline-flex!important;
+}
+
+.xs {
+    padding: .25rem .5rem!important;
+    font-size: .65rem!important;
+    line-height: 1.5!important;
+    border-radius: .2rem!important;
+}
