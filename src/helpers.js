@@ -50,3 +50,7 @@ export const handleFetchError = (e) => {
   console.error("Fetch fail:", e);
   throw e;
 };
+
+export const getSpecialistImage = (image) => {
+  return `https://firebasestorage.googleapis.com/v0/b/lpru-clinictech.appspot.com/o/specialist_images%2F${image}?alt=media`;
+}

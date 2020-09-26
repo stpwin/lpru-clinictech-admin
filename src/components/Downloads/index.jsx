@@ -81,9 +81,10 @@ export class Downloads extends Component {
   hiddenFileInput = createRef();
 
   getDownloadList = () => {
-    getDownloads()
+    return getDownloads()
       .then((res) => {
-        this.setState({
+        console.log(res)
+        return this.setState({
           fetching: false,
           downloads: res,
         });
@@ -129,33 +130,37 @@ export class Downloads extends Component {
     if (!downloadTitle) {
       return;
     }
-    this.setState({
-      creating: true,
-      createFail: "",
-    });
-    createDownload(downloadTitle)
-      .then((res) => {
-        console.log(res);
-        const { downloads_id } = res;
-        console.log("Create done id:", downloads_id);
+    this.setState(
+      {
+        creating: true,
+        createFail: "",
+        fetchFail: ""
+      },
+      () => {
+        createDownload(downloadTitle)
+          .then((res) => {
+            console.log(res);
+            const { downloads_id } = res;
+            console.log("Create done id:", downloads_id);
 
-        this.setState(
-          {
-            creating: false,
-            createDownloadShow: false,
-            downloadTitle: "",
-          },
-          () => {
-            this.getDownloadList();
-          }
-        );
-      })
-      .catch((err) => {
-        this.setState({
-          createFail: err,
-          creating: false,
-        });
-      });
+            this.setState(
+              {
+                creating: false,
+                createDownloadShow: false,
+                downloadTitle: "",
+              },
+              this.getDownloadList
+            );
+          })
+          .catch((err) => {
+            this.setState({
+              createFail: err,
+              creating: false,
+            });
+          });
+      }
+    );
+    
   };
 
   handleDeleteDownload = (downloadsID) => {
@@ -256,7 +261,7 @@ export class Downloads extends Component {
     return (
       <>
         <Container className='mt-5'>
-          <p>This is download</p>
+          <h5>Downloads</h5>
 
           <Table striped bordered hover size='sm'>
             <thead>

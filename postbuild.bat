@@ -1,6 +1,6 @@
 @ECHO OFF
-REM echo "Copy config.development.js"
-REM xcopy "config.development.js" "src\config.js" /Y
+echo "Copy config.development.js"
+xcopy "config.development.js" "src\config.js" /Y
 echo "Copy .htaccess"
 xcopy ".htaccess" "build\" /Y
 echo "Deploy to server..."

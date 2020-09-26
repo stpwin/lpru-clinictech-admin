@@ -1,6 +1,6 @@
 import { handleResponse, handleFetchError }
  from "../../helpers"
-const apiUrl = "http://clinictech.local";
+import { apiUrl } from "../../config";
 
 export const getDownloads = () => {
   const requestOptions = {

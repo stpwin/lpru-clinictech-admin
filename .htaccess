@@ -1,11 +1,13 @@
 <IfModule mod_rewrite.c>
 
   RewriteEngine On
-  RewriteBase /
+  RewriteBase /admin
   RewriteRule ^index\.html$ - [L]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{REQUEST_FILENAME} !-l
-  RewriteRule . /index.html [L]
+  RewriteCond %{REQUEST_FILENAME} -s [OR]
+  RewriteCond %{REQUEST_FILENAME} -l [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^.*$ - [NC,L]
+  RewriteRule ^.*$ index.html [NC,L]
+
 
 </IfModule>
