@@ -1,5 +1,5 @@
 import { handleResponse, handleFetchError } from "../../helpers";
-import { apiUrl } from "../../config"
+import { apiUrl } from "../../config";
 
 export const getSpecialist = () => {
   const requestOptions = {
@@ -88,7 +88,6 @@ export const removeSpecialist = (id) => {
     .catch(handleFetchError);
 };
 
-
 export const addDescription = (specialist_id, description) => {
   const requestOptions = {
     method: "POST",
@@ -115,7 +114,10 @@ export const removeDescription = (id) => {
     body: JSON.stringify({ id }),
   };
 
-  return fetch(`${apiUrl}/specialist/manage/removeDescription.php`, requestOptions)
+  return fetch(
+    `${apiUrl}/specialist/manage/removeDescription.php`,
+    requestOptions
+  )
     .then(handleResponse)
     .then((res) => {
       return res;
@@ -123,3 +125,164 @@ export const removeDescription = (id) => {
     .catch(handleFetchError);
 };
 
+export const getOwnersExcept = (except) => {
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+    },
+    body: JSON.stringify({ except }),
+  };
+
+  return fetch(
+    `${apiUrl}/specialist/manage/getOwnersExcept.php`,
+    requestOptions
+  )
+    .then(handleResponse)
+    .then((res) => {
+      return res;
+    })
+    .catch(handleFetchError);
+};
+
+export const getAllOwners = () => {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+    },
+    // body: JSON.stringify({ except }),
+  };
+
+  return fetch(`${apiUrl}/specialist/manage/getAllOwners.php`, requestOptions)
+    .then(handleResponse)
+    .then((res) => {
+      return res;
+    })
+    .catch(handleFetchError);
+};
+
+export const getOwnerByID = (id) => {
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+    },
+    body: JSON.stringify({ id }),
+  };
+
+  return fetch(`${apiUrl}/specialist/manage/getOwnerByID.php`, requestOptions)
+    .then(handleResponse)
+    .then((res) => {
+      return res;
+    })
+    .catch(handleFetchError);
+};
+
+export const addOwner = (specialist_id, owner_id) => {
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+    },
+    body: JSON.stringify({ specialist_id, owner_id }),
+  };
+
+  return fetch(`${apiUrl}/specialist/manage/addOwner.php`, requestOptions)
+    .then(handleResponse)
+    .then((res) => {
+      return res;
+    })
+    .catch(handleFetchError);
+};
+
+export const createOwner = (owner) => {
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+    },
+    body: JSON.stringify({ owner }),
+  };
+
+  return fetch(`${apiUrl}/specialist/manage/createOwner.php`, requestOptions)
+    .then(handleResponse)
+    .then((res) => {
+      return res;
+    })
+    .catch(handleFetchError);
+};
+
+export const updateOwner = (owner) => {
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+    },
+    body: JSON.stringify({ owner }),
+  };
+
+  return fetch(`${apiUrl}/specialist/manage/updateOwner.php`, requestOptions)
+    .then(handleResponse)
+    .then((res) => {
+      return res;
+    })
+    .catch(handleFetchError);
+};
+
+export const updateOwnerImage = (owner_id, image) => {
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+    },
+    body: JSON.stringify({ owner_id, image }),
+  };
+
+  return fetch(
+    `${apiUrl}/specialist/manage/updateOwnerImage.php`,
+    requestOptions
+  )
+    .then(handleResponse)
+    .then((res) => {
+      return res;
+    })
+    .catch(handleFetchError);
+};
+
+export const removeOwner = (id) => {
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+    },
+    body: JSON.stringify({ id }),
+  };
+
+  return fetch(`${apiUrl}/specialist/manage/removeOwner.php`, requestOptions)
+    .then(handleResponse)
+    .then((res) => {
+      return res;
+    })
+    .catch(handleFetchError);
+};
+
+export const removeOwnerSpecialist = (id) => {
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+    },
+    body: JSON.stringify({ id }),
+  };
+
+  return fetch(
+    `${apiUrl}/specialist/manage/removeOwnerSpecialist.php`,
+    requestOptions
+  )
+    .then(handleResponse)
+    .then((res) => {
+      return res;
+    })
+    .catch(handleFetchError);
+};

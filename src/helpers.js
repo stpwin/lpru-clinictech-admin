@@ -1,15 +1,15 @@
-export const handleResponse = (response) => {
+export const handleResponse = async (response) => {
   if (response.status === 204) {
     return null;
   }
 
   const contentType = response.headers.get("content-type");
   if (contentType && contentType.indexOf("application/json") === -1) {
-    console.warn("Response is not JSON format!");
+    console.warn("Response is not JSON format!", await response.text());
     return null;
-  } 
+  }
 
-  return response.text().then((text) => {
+  return await response.text().then((text) => {
     let error;
     let data = {};
     if (text) {
@@ -17,7 +17,7 @@ export const handleResponse = (response) => {
         data = JSON.parse(text);
         error = data.error;
       } catch {
-        console.warn("Parse JSON fail!");
+        console.warn("Parse JSON fail!", text);
         data = null;
         error = '{"error":"Parse JSON fail!"}';
       }
@@ -36,11 +36,11 @@ export const handleResponse = (response) => {
 
 export const handleNotfound = (e) => {
   if (e instanceof TypeError) {
-    return Promise.reject(e)
+    return Promise.reject(e);
   }
   console.log("Fetch not found:", e);
   // throw e;
-  return null
+  return null;
 };
 
 export const handleFetchError = (e) => {
@@ -53,4 +53,7 @@ export const handleFetchError = (e) => {
 
 export const getSpecialistImage = (image) => {
   return `https://firebasestorage.googleapis.com/v0/b/lpru-clinictech.appspot.com/o/specialist_images%2F${image}?alt=media`;
-}
+};
+export const getOwnerImage = (image) => {
+  return `https://firebasestorage.googleapis.com/v0/b/lpru-clinictech.appspot.com/o/owner_images%2F${image}?alt=media`;
+};

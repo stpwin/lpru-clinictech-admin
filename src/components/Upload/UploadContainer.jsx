@@ -17,23 +17,27 @@ export const UploadContainer = forwardRef((props, ref) => {
   const [cropper, setCropper] = useState({
     crop: { x: 0, y: 0 },
     zoom: 1,
-    aspect: 4 / 3,
+    aspect: props.cropAspect,
   });
   const [croppedAreaPixels, setCroppedAreaPixels] = useState({});
   const fileUpload = useRef(null);
 
   useEffect(() => {
-    setImageUrl(props.defaultImage);
+    if (props.showFileBrowser) {
+      // fileUpload.current.click();
+    } else {
+      setImageUrl(props.defaultImage);
+    }
   }, [props]);
 
   useImperativeHandle(ref, () => ({
-    Upload: async () => {
+    Upload: async (path) => {
       const file = fileUpload.current.files[0];
       if (!file) return;
       const cropped = await getCroppedImg(imageUrl, croppedAreaPixels);
-      return await uploadImage(cropped);
-    }
-  }))
+      return await uploadImage(cropped, path);
+    },
+  }));
 
   const showFileBrowser = () => {
     fileUpload.current.click();
@@ -70,31 +74,33 @@ export const UploadContainer = forwardRef((props, ref) => {
     <Container>
       <Row>
         <Col>
-          <div className='crop-container'>
-            <Cropper
-              image={imageUrl}
-              crop={cropper.crop}
-              zoom={cropper.zoom}
-              aspect={cropper.aspect}
-              onCropChange={onCropChange}
-              onCropComplete={onCropComplete}
-            />
-          </div>
+          {imageUrl ? (
+            <div className="crop-container">
+              <Cropper
+                image={imageUrl}
+                crop={cropper.crop}
+                zoom={cropper.zoom}
+                aspect={cropper.aspect}
+                onCropChange={onCropChange}
+                onCropComplete={onCropComplete}
+              />
+            </div>
+          ) : null}
         </Col>
       </Row>
       <Row>
         <Col className="mt-2 ml-2">
-          <Button size='sm' variant='success' onClick={() => showFileBrowser()}>
+          <Button size="sm" variant="success" onClick={() => showFileBrowser()}>
             เลือกไฟล์
           </Button>
         </Col>
       </Row>
       <input
-        type='file'
+        type="file"
         style={{ display: "none" }}
         ref={fileUpload}
         onChange={handleFileChange}
-        accept='image/x-png,image/gif,image/jpeg'
+        accept="image/x-png,image/gif,image/jpeg"
       />
     </Container>
   );

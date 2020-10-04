@@ -260,9 +260,10 @@ export class Downloads extends Component {
     } = this.state;
     return (
       <>
+      <header>
+        <h1>ดาวน์โหลด</h1>
+      </header>
         <Container className='mt-5'>
-          <h5>Downloads</h5>
-
           <Table striped bordered hover size='sm'>
             <thead>
               <tr>

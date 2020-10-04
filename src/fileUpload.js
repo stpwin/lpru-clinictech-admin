@@ -1,10 +1,10 @@
 import { storage } from "./firebaseApp";
 import uuid from "uuid/dist/v4";
 
-export const uploadImage = (fileBlob) => {
+export const uploadImage = (fileBlob, path) => {
   return new Promise((resolve, reject) => {
     const newName = `${uuid()}`; //.${fileObj.name.split('.').pop()}`
-    const storageRef = storage.ref(`specialist_images/${newName}`);
+    const storageRef = storage.ref(`${path}/${newName}`);
     const task = storageRef.put(fileBlob);
 
     task.on(
@@ -29,4 +29,4 @@ export const uploadImage = (fileBlob) => {
   });
 };
 
-export default uploadImage
+export default uploadImage;

@@ -1,12 +1,5 @@
-import React, { Component, createRef } from 'react'
-import {
-  Container,
-  Table,
-  Button,
-  Spinner,
-  Row,
-  Col,
-} from "react-bootstrap";
+import React, { Component, createRef } from "react";
+import { Table, Button, Spinner, Row, Col } from "react-bootstrap";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import Resizer from "react-image-file-resizer";
 
@@ -18,18 +11,21 @@ import {
   removeSpecialist,
   addDescription,
   removeDescription,
+  addOwner,
+  createOwner,
+  removeOwnerSpecialist,
 } from "./specialistHelpers";
 
 import { getSpecialistImage } from "../../helpers";
 import getCroppedImg from "../../cropImage";
-import {uploadImage} from "../../fileUpload"
+import { uploadImage } from "../../fileUpload";
 
-import { AddSpecialistModal } from './AddSpecialistModal'
-import { Description} from "./Description"
-import { Owners } from "./Owners"
-import { TitleEdit } from './TitleEdit';
-import { ImageEdit } from './ImageEdit';
-
+import { AddSpecialistModal } from "./AddSpecialistModal";
+import { Description } from "./Description";
+import { Owners } from "./Owners";
+import { TitleEdit } from "./TitleEdit";
+import { ImageEdit } from "../ImageEdit";
+import { AddOwnerModal } from "./AddOwnerModal";
 
 export class Specialist extends Component {
   state = {
@@ -51,9 +47,14 @@ export class Specialist extends Component {
     descriptionText: [],
     addingDescriptionList: [],
     removingDescriptionList: {},
+    showAddOwner: false,
+    ownersSuggestion: [],
+    ownerAddSpecialistId: null,
+    currentAddOwnerIndex: null,
   };
 
   uploadFileRef = createRef();
+  suggestionRef = createRef();
 
   handleCropChange = (crop) => {
     this.setState({
@@ -72,14 +73,14 @@ export class Specialist extends Component {
       specialist: [],
       fetching: true,
       createFail: "",
-      removingDescriptionList: {}
+      removingDescriptionList: {},
     });
     getSpecialist()
       .then((res) => {
         this.setState({
           specialist: res,
           fetching: false,
-          removingDescriptionList: {}
+          removingDescriptionList: {},
         });
         // console.log(res);
       })
@@ -145,7 +146,7 @@ export class Specialist extends Component {
           specialistImageUrl,
           croppedAreaPixels
         );
-        imageUrl = await uploadImage(cropped);
+        imageUrl = await uploadImage(cropped, "specialist_images");
       } catch (e) {
         console.warn(e);
         this.setState({
@@ -157,7 +158,7 @@ export class Specialist extends Component {
     }
     createSpecialist(specialistTitle, imageUrl)
       .then((res) => {
-        console.log(res);
+        // console.log(res);
         newSpecialist.thumbnail = imageUrl;
         newSpecialist.id = res.specialist_id;
         newSpecialist.created = res.created;
@@ -272,7 +273,7 @@ export class Specialist extends Component {
       removingDescriptionList[sindex] = {};
       removingDescriptionList[sindex][index] = true;
     }
-      
+
     // console.log(removingDescriptionList);
     this.setState({
       removingDescriptionList,
@@ -292,18 +293,87 @@ export class Specialist extends Component {
       .catch((err) => {});
   };
 
-  handleAddOwner = (sid, image, name, phone, email, place) => {
-    console.log({ sid, image, name, phone, email, place });
+  handleAddOwner = ({ id, name, image }) => {
+    // console.log({ id, image, name });
+    let { specialist, ownerAddSpecialistId, currentAddOwnerIndex } = this.state;
+    if (!id) {
+      // console.log("Create new");
+      return createOwner({ name, image })
+        .then((res) => {
+          this.suggestionRef.current.Clear();
+          addOwner(ownerAddSpecialistId, res.owner_id)
+            .then((res) => {
+              specialist[currentAddOwnerIndex].owner.push({
+                id: res.owner_id,
+                image,
+                name,
+              });
+              this.setState({
+                showAddOwner: false,
+                ownerAddSpecialistId: null,
+                currentAddOwnerIndex: null,
+                specialist,
+              });
+              // console.log(res);
+            })
+            .catch((err) => {
+              this.suggestionRef.current.SetError(err);
+              // console.warn(err)
+            });
+        })
+        .catch((err) => {
+          this.suggestionRef.current.SetError(err);
+          // console.warn(err)
+        });
+    }
+    // console.log("Add");
+    addOwner(ownerAddSpecialistId, id)
+      .then((res) => {
+        this.suggestionRef.current.Clear();
+        specialist[currentAddOwnerIndex].owner.push({
+          id: res.owner_id,
+          image,
+          name,
+        });
+        this.setState({
+          showAddOwner: false,
+          ownerAddSpecialistId: null,
+          currentAddOwnerIndex: null,
+          specialist,
+        });
+        // console.log(res);
+      })
+      .catch((err) => {
+        this.suggestionRef.current.SetError(err);
+        // console.warn(err)
+      });
+  };
+
+  handleShowAddOwner = (currentAddOwnerIndex, specialistID) => {
+    // console.log({ specialistID });
+    this.setState({
+      showAddOwner: true,
+      ownerAddSpecialistId: specialistID,
+      currentAddOwnerIndex,
+    });
+    this.suggestionRef.current.Clear();
+    this.suggestionRef.current.FetchOwners(specialistID);
   };
 
   handleRemoveOwner = (sindex, index, id) => {
-    console.log({ sindex, index, id });
-    // if (!(sindex && (index ) && id)) return;
+    // console.log({ sindex, index, id });
+
     let specialist = this.state.specialist;
-    delete specialist[sindex].owner[index];
-    this.setState({
-      specialist,
-    });
+    removeOwnerSpecialist(id)
+      .then((res) => {
+        delete specialist[sindex].owner[index];
+        this.setState({
+          specialist,
+        });
+      })
+      .catch((err) => {
+        console.warn(err);
+      });
   };
 
   handleFileSelected = (e) => {
@@ -327,25 +397,27 @@ export class Specialist extends Component {
   };
 
   handleTitleChangeSave = (sid, title, callback) => {
-    changeTitle(sid, title).then(res => {
-      callback(title);
-    }).catch(err => {
-      callback("", err);
-    })
-  }
+    changeTitle(sid, title)
+      .then((res) => {
+        callback(title);
+      })
+      .catch((err) => {
+        callback("", err);
+      });
+  };
 
   handleImageChangeSave = (index, sid, imageName) => {
-    changeImage(sid, imageName).then(res => {
-      let { specialist } = this.state
-      specialist[index].thumbnail = imageName;
-      this.setState({
-        specialist
+    changeImage(sid, imageName)
+      .then((res) => {
+        let { specialist } = this.state;
+        specialist[index].thumbnail = imageName;
+        this.setState({
+          specialist,
+        });
       })
-    }).catch(err => {
-
-    });
-    console.log({ sid, imageName });
-  }
+      .catch((err) => {});
+    // console.log({ sid, imageName });
+  };
 
   render() {
     const {
@@ -361,11 +433,16 @@ export class Specialist extends Component {
       removingList,
       addingDescriptionList,
       removingDescriptionList,
+      showAddOwner,
+      ownersSuggestion,
     } = this.state;
     return (
-      <Container className='p-5'>
-        <h5>Specialist</h5>
-        <Table bordered striped hover size='sm'>
+      <>
+        <header>
+          <h1>ข้อมูลผู้เชี่ยวชาญ</h1>
+        </header>
+        {/* <Container> */}
+        <Table bordered striped hover size="sm" className="text-center">
           <thead>
             <tr>
               <th style={{ width: "3%" }}>#</th>
@@ -373,8 +450,9 @@ export class Specialist extends Component {
               <th style={{ width: "30%" }}>เจ้าของ</th>
               <th>
                 <Button
-                  className='xs'
-                  variant='outline-success'
+                  block
+                  className="xs"
+                  variant="outline-success"
                   onClick={this.handleShowAddSpecialist}
                 >
                   <FaPlus />
@@ -382,35 +460,46 @@ export class Specialist extends Component {
               </th>
             </tr>
           </thead>
-          <tbody className='fit-last-cell'>
+          <tbody className="fit-last-cell">
             {fetching ? (
               <tr>
                 <td colSpan={4}>
-                  <Spinner animation='border' />
+                  <Spinner animation="border" />
                 </td>
               </tr>
             ) : fetchFail ? (
-              <td colSpan={4}>{fetchFail}</td>
+              <tr>
+                <td className="text-danger" colSpan={4}>
+                  {fetchFail}
+                </td>
+              </tr>
             ) : (
               <>
                 {specialist &&
                   specialist.map((ele, i) => {
                     // console.log(ele)
                     if (!ele) {
-                      console.log("Specialist length", specialist.length);
-                      console.log("null on index", i);
+                      // console.log("Specialist length", specialist.length);
+                      // console.log("null on index", i);
                       return null;
                     }
                     let inputRef = null;
                     return (
                       <tr key={`specialist-${i}`}>
-                        <td className='v-center'>{i + 1}</td>
+                        <td className="v-center">{i + 1}</td>
                         <td>
-                          <Row className='mx-0'>
-                            <Col sm='auto' className='my-auto'>
+                          <Row className="mx-0">
+                            <Col sm="auto" className="my-auto">
                               <ImageEdit
+                                showFileBrowserOnClick={true}
+                                cropAspect={4 / 3}
+                                path="specialist_images"
                                 onUploadDone={(imageName) =>
-                                  this.handleImageChangeSave(i, ele.id, imageName)
+                                  this.handleImageChangeSave(
+                                    i,
+                                    ele.id,
+                                    imageName
+                                  )
                                 }
                                 thumbnailUrl={
                                   (ele &&
@@ -422,7 +511,7 @@ export class Specialist extends Component {
                             </Col>
                             <Col>
                               <div
-                                className='font-weight-bold my-2 text-left text-wrap'
+                                className="font-weight-bold my-2 text-left text-wrap"
                                 style={{ overflowWrap: "anywhere" }}
                               >
                                 <TitleEdit
@@ -457,28 +546,29 @@ export class Specialist extends Component {
                             sindex={i}
                             data={ele.owner}
                             onTrash={this.handleRemoveOwner}
+                            onAdd={() => this.handleShowAddOwner(i, ele.id)}
                           />
                         </td>
                         <td>
-                          <div className='button-group'>
+                          <div className="button-group">
                             {removingList[i] ? (
                               <Button
-                                className='xs'
-                                variant='outline-danger'
+                                className="xs"
+                                variant="outline-danger"
                                 disabled
                               >
                                 <Spinner
-                                  as='span'
-                                  animation='border'
-                                  size='sm'
-                                  role='status'
-                                  aria-hidden='true'
+                                  as="span"
+                                  animation="border"
+                                  size="sm"
+                                  role="status"
+                                  aria-hidden="true"
                                 />
                               </Button>
                             ) : (
                               <Button
-                                className='xs'
-                                variant='outline-danger'
+                                className="xs"
+                                variant="outline-danger"
                                 onClick={() =>
                                   this.handleRemoveSpecialist(i, ele.id)
                                 }
@@ -509,16 +599,24 @@ export class Specialist extends Component {
           onTitleChange={this.handleAddSpecialistTitleChange}
           onShowFileBrowser={() => this.uploadFileRef.current.click()}
         />
+        <AddOwnerModal
+          ref={this.suggestionRef}
+          show={showAddOwner}
+          owners={ownersSuggestion}
+          onHide={() => this.setState({ showAddOwner: false })}
+          onSave={this.handleAddOwner}
+        />
         <input
-          type='file'
+          type="file"
           style={{ display: "none" }}
           ref={this.uploadFileRef}
           onChange={this.handleFileSelected}
-          accept='image/x-png,image/gif,image/jpeg'
+          accept="image/x-png,image/gif,image/jpeg"
         />
-      </Container>
+        {/* </Container> */}
+      </>
     );
   }
 }
 
-export default Specialist
+export default Specialist;
