@@ -1,23 +1,35 @@
-import React, { Component, createRef } from 'react'
+import React, { Component, createRef } from "react";
 
-import { storage } from "../../firebaseApp"
+import { storage } from "../../firebaseApp";
 // import uuid from "uuid/dist/v4"
 
-import { Container, Button, Modal, Form, Spinner, Table, Badge } from "react-bootstrap";
+import { Button, Modal, Form, Spinner, Table, Badge } from "react-bootstrap";
 
-import { getDownloads, createDownload, createFiles, deleteFile, deleteDownload } from "./downloadsHelper";
+import {
+  getDownloads,
+  createDownload,
+  createFiles,
+  deleteFile,
+  deleteDownload
+} from "./downloadsHelper";
 
-import {FaTrash, FaPlus, FaCheck} from 'react-icons/fa'
+import { FaTrash, FaPlus, FaCheck } from "react-icons/fa";
 
-const uploadAsPromise = (fileObj, callback, index, downloadsID, downloadsTitle) => {
+const uploadAsPromise = (
+  fileObj,
+  callback,
+  index,
+  downloadsID,
+  downloadsTitle
+) => {
   return new Promise((resolve, reject) => {
     const metadata = {
       customMetadata: {
         downloadsID,
-        downloadsTitle,
-      },
+        downloadsTitle
+      }
     };
-    const newName = fileObj.name;//`${uuid()}`; //.${fileObj.name.split('.').pop()}
+    const newName = fileObj.name; //`${uuid()}`; //.${fileObj.name.split('.').pop()}
     const storageRef = storage.ref(`public_files/${newName}`);
     const task = storageRef.put(fileObj, metadata);
 
@@ -61,8 +73,8 @@ const uploadAsPromise = (fileObj, callback, index, downloadsID, downloadsTitle) 
         });
       }
     );
-  })
-}
+  });
+};
 
 export class Downloads extends Component {
   state = {
@@ -75,7 +87,7 @@ export class Downloads extends Component {
     fetchFail: "",
     uploadShow: false,
     uploadTo: ["", ""],
-    uploadList: [],
+    uploadList: []
   };
 
   hiddenFileInput = createRef();
@@ -83,16 +95,16 @@ export class Downloads extends Component {
   getDownloadList = () => {
     return getDownloads()
       .then((res) => {
-        console.log(res)
+        console.log(res);
         return this.setState({
           fetching: false,
-          downloads: res,
+          downloads: res
         });
       })
       .catch((err) => {
         this.setState({
           fetching: false,
-          fetchFail: err,
+          fetchFail: err
         });
       });
   };
@@ -103,25 +115,24 @@ export class Downloads extends Component {
 
   handleShowCreateDownload = () => {
     this.setState({
-      createDownloadShow: true,
+      createDownloadShow: true
     });
   };
 
   handleCloseCreateDownload = () => {
     this.setState({
-      createDownloadShow: false,
+      createDownloadShow: false
     });
   };
 
   handleCloseUpload = () => {
     this.setState({ uploadShow: false, uploadTo: ["", ""], uploadList: [] });
     this.getDownloadList();
-  }
-    
+  };
 
   handleDownloadTitleChanged = (e) => {
     this.setState({
-      downloadTitle: e.target.value,
+      downloadTitle: e.target.value
     });
   };
 
@@ -147,7 +158,7 @@ export class Downloads extends Component {
               {
                 creating: false,
                 createDownloadShow: false,
-                downloadTitle: "",
+                downloadTitle: ""
               },
               this.getDownloadList
             );
@@ -155,12 +166,11 @@ export class Downloads extends Component {
           .catch((err) => {
             this.setState({
               createFail: err,
-              creating: false,
+              creating: false
             });
           });
       }
     );
-    
   };
 
   handleDeleteDownload = (downloadsID) => {
@@ -197,40 +207,40 @@ export class Downloads extends Component {
   handleUploadCompleted = (index, url) => {
     // console.log("Upload complete callback:", url);
     let { uploadList, uploadTo } = this.state;
-    if (!uploadList) return
-      
+    if (!uploadList) return;
+
     uploadList[index].url = url;
     uploadList[index].uploading = false;
     this.setState({
       uploadList
-    })
+    });
 
     const allDone = uploadList.every((current) => current.uploading === false);
     // console.log({ allDone });
     if (allDone) {
       // console.log("Add to database")
-      const files = uploadList.map(file => {
+      const files = uploadList.map((file) => {
         return [uploadTo[0], file.name, file.url];
       });
-        createFiles(files)
-          .then((res) => {
-            // console.log(res)
-          })
-          .catch((err) => {
-            console.warn(err)
-          });
+      createFiles(files)
+        .then((res) => {
+          // console.log(res)
+        })
+        .catch((err) => {
+          console.warn(err);
+        });
     }
   };
 
   handleFileSelected = (e) => {
     // console.log(e.target.files);
-    let {uploadList, uploadTo} = this.state;
+    let { uploadList, uploadTo } = this.state;
     Array.from(e.target.files).forEach((f) => {
       const index =
         uploadList.push({
           uploading: true,
           url: "",
-          name: f.name,
+          name: f.name
         }) - 1;
       uploadList[index].task = uploadAsPromise(
         f,
@@ -241,7 +251,7 @@ export class Downloads extends Component {
       );
     });
     this.setState({
-      uploadList,
+      uploadList
     });
   };
 
@@ -256,80 +266,76 @@ export class Downloads extends Component {
       fetchFail,
       uploadShow,
       uploadTo,
-      uploadList,
+      uploadList
     } = this.state;
     return (
       <>
-      <header>
-        <h1>ดาวน์โหลด</h1>
-      </header>
-        <Container className='mt-5'>
-          <Table striped bordered hover size='sm'>
-            <thead>
+        <header>
+          <h1>ดาวน์โหลด</h1>
+        </header>
+        <Table striped bordered hover size="sm">
+          <thead>
+            <tr>
+              <th style={{ width: "3%" }}>#</th>
+              <th style={{ width: "50%" }}>รายการกลุ่มดาวน์โหลด</th>
+              <th>รายการไฟล์</th>
+              <th>
+                <Button
+                  className="xs"
+                  variant="outline-success"
+                  onClick={this.handleShowCreateDownload}
+                >
+                  <FaPlus />
+                </Button>
+              </th>
+            </tr>
+          </thead>
+          <tbody className="fit-last-cell">
+            {fetching ? (
               <tr>
-                <th style={{ width: "3%" }}>#</th>
-                <th style={{ width: "50%" }}>รายการกลุ่มดาวน์โหลด</th>
-                <th>รายการไฟล์</th>
-                <th>
-                  <Button
-                    className='xs'
-                    variant='outline-success'
-                    onClick={this.handleShowCreateDownload}
-                  >
-                    <FaPlus />
-                  </Button>
-                </th>
+                <td colSpan={4}>
+                  <Spinner animation="border" />
+                </td>
               </tr>
-            </thead>
-            <tbody className='fit-last-cell'>
-              {fetching ? (
-                <tr>
-                  <td colSpan={4}>
-                    <Spinner animation='border' />
-                  </td>
-                </tr>
-              ) : fetchFail ? (
-                <tr>
-                  <td colSpan={4}>{fetchFail}</td>
-                </tr>
-              ) : (
-                <>
-                  {downloads &&
-                    downloads.map((ele, i) => {
-                      return (
-                        <tr key={`downloads-${i}`}>
-                          <td>{i + 1}</td>
-                          <td>{ele.title}</td>
-                          <td>
-                            <FilesTable
-                              files={ele.files}
-                              onAddClick={() =>
-                                this.handleFilesAdd(ele.id, ele.title)
-                              }
-                              onTrashClick={this.handleFileDelete}
-                            />
-                          </td>
-                          <td>
-                            <div className='button-group'>
-                              <Button
-                                className='xs'
-                                variant='outline-danger'
-                                onClick={() =>
-                                  this.handleDeleteDownload(ele.id)
-                                }
-                              >
-                                <FaTrash />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                </>
-              )}
-            </tbody>
-          </Table>
-        </Container>
+            ) : fetchFail ? (
+              <tr>
+                <td colSpan={4}>{fetchFail}</td>
+              </tr>
+            ) : (
+              <>
+                {downloads &&
+                  downloads.map((ele, i) => {
+                    return (
+                      <tr key={`downloads-${i}`}>
+                        <td>{i + 1}</td>
+                        <td>{ele.title}</td>
+                        <td>
+                          <FilesTable
+                            files={ele.files}
+                            onAddClick={() =>
+                              this.handleFilesAdd(ele.id, ele.title)
+                            }
+                            onTrashClick={this.handleFileDelete}
+                          />
+                        </td>
+                        <td>
+                          <div className="button-group">
+                            <Button
+                              className="xs"
+                              variant="outline-danger"
+                              onClick={() => this.handleDeleteDownload(ele.id)}
+                            >
+                              <FaTrash />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </>
+            )}
+          </tbody>
+        </Table>
 
         <Modal
           show={createDownloadShow}
@@ -341,42 +347,42 @@ export class Downloads extends Component {
           </Modal.Header>
           <Modal.Body>
             <Form>
-              <Form.Group controlId='downloadTitle'>
+              <Form.Group controlId="downloadTitle">
                 <Form.Label>ชื่อกลุ่มดาวน์โหลด</Form.Label>
                 <Form.Control
-                  type='text'
-                  placeholder='ตั้งชื่อกลุ่มดาวน์โหลด'
+                  type="text"
+                  placeholder="ตั้งชื่อกลุ่มดาวน์โหลด"
                   maxLength={200}
                   value={downloadTitle}
                   onChange={this.handleDownloadTitleChanged}
                 />
                 {createFail ? (
-                  <Form.Text className='text-danger'>{createFail}</Form.Text>
+                  <Form.Text className="text-danger">{createFail}</Form.Text>
                 ) : null}
               </Form.Group>
             </Form>
           </Modal.Body>
           <Modal.Footer>
             <Button
-              variant='secondary'
+              variant="secondary"
               onClick={this.handleCloseCreateDownload}
             >
               ยกเลิก
             </Button>
             {creating ? (
-              <Button variant='primary' disabled>
+              <Button variant="primary" disabled>
                 <Spinner
-                  as='span'
-                  animation='grow'
-                  size='sm'
-                  role='status'
-                  aria-hidden='true'
+                  as="span"
+                  animation="grow"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
                 />
                 กำลังสร้าง...
               </Button>
             ) : (
               <Button
-                variant='primary'
+                variant="primary"
                 onClick={this.handleCreateDownloadSubmit}
               >
                 สร้าง
@@ -396,7 +402,7 @@ export class Downloads extends Component {
           </Modal.Header>
           <Modal.Body>
             <input
-              type='file'
+              type="file"
               style={{ display: "none" }}
               ref={this.hiddenFileInput}
               onChange={this.handleFileSelected}
@@ -410,12 +416,12 @@ export class Downloads extends Component {
                   <th></th>
                 </tr>
               </thead>
-              <tbody className='fit-last-cell'>
+              <tbody className="fit-last-cell">
                 <tr>
-                  <td colSpan={3} className='text-center'>
+                  <td colSpan={3} className="text-center">
                     <Button
-                      className='xs'
-                      variant='outline-success'
+                      className="xs"
+                      variant="outline-success"
                       onClick={this.handleShowFileBrowser}
                     >
                       <FaPlus />
@@ -430,9 +436,9 @@ export class Downloads extends Component {
                         <td>{item.name}</td>
                         <td>
                           {item.uploading ? (
-                            <Spinner animation='border' size='sm' />
+                            <Spinner animation="border" size="sm" />
                           ) : (
-                            <Badge className='xs' variant='success'>
+                            <Badge className="xs" variant="success">
                               <FaCheck />
                             </Badge>
                           )}
@@ -444,7 +450,7 @@ export class Downloads extends Component {
             </Table>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant='secondary' onClick={this.handleCloseUpload}>
+            <Button variant="secondary" onClick={this.handleCloseUpload}>
               เสร็จสิ้น
             </Button>
           </Modal.Footer>
@@ -454,15 +460,15 @@ export class Downloads extends Component {
   }
 }
 
-const FilesTable = ({files, onAddClick, onTrashClick}) => {
+const FilesTable = ({ files, onAddClick, onTrashClick }) => {
   return (
     <Table>
-      <tbody className='fit-last-cell'>
+      <tbody className="fit-last-cell">
         <tr>
           <td colSpan={2}>
             <Button
-              variant='outline-success'
-              className='float-right xs'
+              variant="outline-success"
+              className="float-right xs"
               onClick={onAddClick}
             >
               <FaPlus />
@@ -476,8 +482,8 @@ const FilesTable = ({files, onAddClick, onTrashClick}) => {
                 <td>{file.name}</td>
                 <td>
                   <Button
-                    className='xs'
-                    variant='outline-danger'
+                    className="xs"
+                    variant="outline-danger"
                     onClick={() => onTrashClick(file.id)}
                   >
                     <FaTrash />
@@ -489,6 +495,6 @@ const FilesTable = ({files, onAddClick, onTrashClick}) => {
       </tbody>
     </Table>
   );
-}
+};
 
-export default Downloads
+export default Downloads;

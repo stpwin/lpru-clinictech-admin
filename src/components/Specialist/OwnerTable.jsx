@@ -23,6 +23,7 @@ export class OwnerTable extends Component {
     fetching: true,
     fetchFail: "",
     owners: [],
+    ownersChange: [],
     edits: [],
   };
 
@@ -41,6 +42,7 @@ export class OwnerTable extends Component {
         });
         this.setState({
           owners: res,
+          ownersChange: JSON.parse(JSON.stringify(res)),
           edits,
           fetching: false,
         });
@@ -61,25 +63,34 @@ export class OwnerTable extends Component {
     });
   };
   handleCancelEdit = (index) => {
-    let { owners, edits } = this.state;
+    const { owners, ownersChange, edits } = this.state;
     edits[index].edit = false;
+
+    console.log(owners[index].name);
+
+    ownersChange[index] = { ...owners[index] };
     if (edits[index].add) {
       owners.splice(index, 1);
       edits.splice(index, 1);
     }
+
     this.setState({
       edits,
       owners,
+      ownersChange,
     });
   };
 
   handleSave = (index) => {
-    let { edits, owners } = this.state;
+    let { edits, owners, ownersChange } = this.state;
     edits[index].processing = true;
     edits[index].processFail = "";
     this.setState({
       edits,
     });
+
+    owners[index] = { ...ownersChange[index] };
+
     if (edits[index].add) {
       return createOwner(owners[index])
         .then((res) => {
@@ -161,31 +172,31 @@ export class OwnerTable extends Component {
   };
 
   handleNameChanged = (index, value) => {
-    let { owners } = this.state;
-    owners[index].name = value;
+    const { ownersChange } = this.state;
+    ownersChange[index].name = value;
     this.setState({
-      owners,
+      ownersChange,
     });
   };
   handleEmailChanged = (index, value) => {
-    let { owners } = this.state;
-    owners[index].email = value;
+    let { ownersChange } = this.state;
+    ownersChange[index].email = value;
     this.setState({
-      owners,
+      ownersChange,
     });
   };
   handlePhoneChanged = (index, value) => {
-    let { owners } = this.state;
-    owners[index].phone = value;
+    let { ownersChange } = this.state;
+    ownersChange[index].phone = value;
     this.setState({
-      owners,
+      ownersChange,
     });
   };
   handlePlaceChanged = (index, value) => {
-    let { owners } = this.state;
-    owners[index].place = value;
+    let { ownersChange } = this.state;
+    ownersChange[index].place = value;
     this.setState({
-      owners,
+      ownersChange,
     });
   };
 
@@ -223,7 +234,7 @@ export class OwnerTable extends Component {
   };
 
   render() {
-    const { fetching, fetchFail, owners, edits } = this.state;
+    const { fetching, fetchFail, owners, ownersChange, edits } = this.state;
     return (
       <>
         <header>
@@ -292,7 +303,7 @@ export class OwnerTable extends Component {
                         <td className="v-center">
                           <FormControl
                             size="sm"
-                            value={owner.name}
+                            value={ownersChange[i].name}
                             onChange={(e) =>
                               this.handleNameChanged(i, e.target.value)
                             }
@@ -301,7 +312,7 @@ export class OwnerTable extends Component {
                         <td className="v-center">
                           <FormControl
                             size="sm"
-                            value={owner.email}
+                            value={ownersChange[i].email}
                             onChange={(e) =>
                               this.handleEmailChanged(i, e.target.value)
                             }
@@ -310,7 +321,7 @@ export class OwnerTable extends Component {
                         <td className="v-center">
                           <FormControl
                             size="sm"
-                            value={owner.phone}
+                            value={ownersChange[i].phone}
                             onChange={(e) =>
                               this.handlePhoneChanged(i, e.target.value)
                             }
@@ -321,7 +332,7 @@ export class OwnerTable extends Component {
                             as="textarea"
                             rows={3}
                             size="sm"
-                            value={owner.place}
+                            value={ownersChange[i].place}
                             onChange={(e) =>
                               this.handlePlaceChanged(i, e.target.value)
                             }

@@ -152,10 +152,36 @@ table table {
 }
 
 .spinner-border-xs {
-  width: 0.8rem !important;
-  height: 0.8rem !important;
+  width: 0.65rem !important;
+  height: 0.65rem !important;
 }
 
 .font-small {
   font-size: small;
+}
+
+.tooltip-danger > .tooltip-inner {
+  background-color: #dc3545;
+  color: white;
+  border: 1px solid #dc3545;
+}
+
+.bs-tooltip-auto[x-placement^="bottom"] .arrow::before,
+.tooltip-danger.bs-tooltip-bottom .arrow::before {
+  border-bottom-color: #dc3545 !important;
+}
+
+.bs-tooltip-auto[x-placement^="top"] .arrow::before,
+.tooltip-danger.bs-tooltip-top .arrow::before {
+  border-top-color: #dc3545 !important;
+}
+
+.bs-tooltip-auto[x-placement^="left"] .arrow::before,
+.tooltip-danger.bs-tooltip-left .arrow::before {
+  border-left-color: #dc3545 !important;
+}
+
+.bs-tooltip-auto[x-placement^="right"] .arrow::before,
+.tooltip-danger.bs-tooltip-right .arrow::before {
+  border-right-color: #dc3545 !important;
 }

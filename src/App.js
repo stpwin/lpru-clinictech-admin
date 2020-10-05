@@ -7,6 +7,7 @@ import Downloads from "./components/Downloads";
 import Specialist from "./components/Specialist";
 import OwnerTable from "./components/Specialist/OwnerTable";
 import News from "./components/News";
+import Gallery from "./components/Gallery";
 
 import Notfound from "./components/Notfound";
 import Navbar from "./components/Navbar";
@@ -21,6 +22,7 @@ function App() {
           <Route exact path="/downloads" component={Downloads} />
           <Route exact path="/specialist" component={Specialist} />
           <Route exact path="/specialist/owner" component={OwnerTable} />
+          <Route exact path="/gallery" component={Gallery} />
           <Route exact path="/news" component={News} />
           <Route component={Notfound} />
         </Switch>

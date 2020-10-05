@@ -6,7 +6,7 @@ export const handleResponse = async (response) => {
   const contentType = response.headers.get("content-type");
   if (contentType && contentType.indexOf("application/json") === -1) {
     console.warn("Response is not JSON format!", await response.text());
-    return null;
+    return Promise.reject("ข้อมูลไม่ถูกต้อง");
   }
 
   return await response.text().then((text) => {
@@ -19,16 +19,12 @@ export const handleResponse = async (response) => {
       } catch {
         console.warn("Parse JSON fail!", text);
         data = null;
-        error = '{"error":"Parse JSON fail!"}';
+        error = "ข้อมูลไม่ถูกต้อง";
       }
     }
-    if (!response.ok) {
-      // console.log(error)
-      return Promise.reject(
-        error
-          ? `${response.statusText} ${JSON.stringify(error, null, 4)}`
-          : ` ${response.statusText}`
-      );
+    if (!response.ok || error) {
+      // console.log(error);
+      return Promise.reject(error);
     }
     return data;
   });
@@ -45,9 +41,10 @@ export const handleNotfound = (e) => {
 
 export const handleFetchError = (e) => {
   if (e instanceof TypeError) {
-    return Promise.reject("ไม่สามารถติดต่อเซิร์ฟเวอร์ได้");
+    Promise.reject("ไม่สามารถติดต่อเซิร์ฟเวอร์ได้");
   }
   console.error("Fetch fail:", e);
+  // Promise.reject(e);
   throw e;
 };
 
@@ -56,4 +53,10 @@ export const getSpecialistImage = (image) => {
 };
 export const getOwnerImage = (image) => {
   return `https://firebasestorage.googleapis.com/v0/b/lpru-clinictech.appspot.com/o/owner_images%2F${image}?alt=media`;
+};
+export const getNewsImage = (image) => {
+  return `https://firebasestorage.googleapis.com/v0/b/lpru-clinictech.appspot.com/o/news_images%2F${image}?alt=media`;
+};
+export const getGalleryImage = (image) => {
+  return `https://firebasestorage.googleapis.com/v0/b/lpru-clinictech.appspot.com/o/gallery_images%2F${image}?alt=media`;
 };

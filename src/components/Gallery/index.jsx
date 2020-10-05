@@ -18,27 +18,26 @@ import {
   FaArrowCircleRight
 } from "react-icons/fa";
 import {
+  getGallery,
   create,
-  getNews,
   setPublic,
   updateInfo,
-  remove,
-  updateImage
-} from "./newsHelpers";
+  updateImage,
+  remove
+} from "./galleryHelpers";
 import { ImageEdit } from "../ImageEdit";
-import { getNewsImage } from "../../helpers";
-import NewsEditor from "./NewsEditor";
-export class News extends Component {
+import { getGalleryImage } from "../../helpers";
+export class Gallery extends Component {
   state = {
     fetching: true,
     fetchFail: "",
-    news: [],
+    gallery: [],
     edits: [],
-    newsChange: []
+    galleryChange: []
   };
 
   componentDidMount() {
-    getNews()
+    getGallery()
       .then((res) => {
         // console.log(res);
         const edits = res.map((item) => {
@@ -56,8 +55,8 @@ export class News extends Component {
         });
         this.setState({
           fetching: false,
-          news: res,
-          newsChange: JSON.parse(JSON.stringify(res)),
+          gallery: res,
+          galleryChange: JSON.parse(JSON.stringify(res)),
           edits
         });
       })
@@ -67,24 +66,22 @@ export class News extends Component {
   }
 
   handleAdd = () => {
-    let { news, newsChange, edits } = this.state;
-    news.unshift({
+    let { gallery, galleryChange, edits } = this.state;
+    gallery.unshift({
       id: null,
       title: "",
       subtitle: "",
       thumdbImg: null,
-      linkTo: null,
-      content: null,
+      imageCount: 0,
       _public: false
     });
 
-    newsChange.unshift({
+    galleryChange.unshift({
       id: null,
       title: "",
       subtitle: "",
       thumdbImg: null,
-      linkTo: null,
-      content: null,
+      imageCount: 0,
       _public: false
     });
 
@@ -98,15 +95,15 @@ export class News extends Component {
       addEditError: "",
       deleteError: ""
     });
-    // console.log(news);
+    // console.log(gallery);
     this.setState({
-      news,
+      gallery,
       edits
     });
   };
 
   handleSave = (index) => {
-    let { news, newsChange, edits } = this.state;
+    let { gallery, galleryChange, edits } = this.state;
 
     edits[index].processing = true;
     edits[index].addEditError = "";
@@ -115,16 +112,17 @@ export class News extends Component {
     });
 
     if (edits[index].add) {
-      //Create new function here
-      create(newsChange[index])
+      //   Create new function here
+      create(galleryChange[index])
         .then((res) => {
           edits[index].processing = false;
           edits[index].edit = false;
           edits[index].add = false;
-          newsChange[index].id = res.id;
-          news[index] = { ...newsChange[index] };
+          galleryChange[index].id = res.id;
+          galleryChange[index].created = res.created;
+          gallery[index] = { ...galleryChange[index] };
           this.setState({
-            news,
+            gallery,
             edits
           });
         })
@@ -140,16 +138,16 @@ export class News extends Component {
 
     //Update function here
     updateInfo(
-      news[index].id,
-      newsChange[index].title,
-      newsChange[index].subtitle
+      gallery[index].id,
+      galleryChange[index].title,
+      galleryChange[index].subtitle
     )
       .then((res) => {
         edits[index].processing = false;
         edits[index].edit = false;
-        news[index] = { ...newsChange[index] };
+        gallery[index] = { ...galleryChange[index] };
         this.setState({
-          news,
+          gallery,
           edits
         });
       })
@@ -163,36 +161,36 @@ export class News extends Component {
   };
 
   handleCancelSave = (index) => {
-    const { news, newsChange, edits } = this.state;
+    const { gallery, galleryChange, edits } = this.state;
 
     if (edits[index].add) {
-      news.splice(index, 1);
+      gallery.splice(index, 1);
       edits.splice(index, 1);
       this.setState({
-        news,
+        gallery,
         edits
       });
       return;
     }
 
-    newsChange[index].title = news[index].title;
-    newsChange[index].subtitle = news[index].subtitle;
+    galleryChange[index].title = gallery[index].title;
+    galleryChange[index].subtitle = gallery[index].subtitle;
 
-    console.log(news[index].title);
+    console.log(gallery[index].title);
     edits[index].edit = false;
     this.setState({
-      newsChange,
+      galleryChange,
       edits
     });
   };
 
   handleToggleShowPublic = (index) => {
-    const { news, edits } = this.state;
+    const { gallery, edits } = this.state;
 
     if (edits[index].add) {
-      news[index]._public = !news[index]._public;
+      gallery[index]._public = !gallery[index]._public;
       this.setState({
-        news
+        gallery
       });
       return;
     }
@@ -204,14 +202,14 @@ export class News extends Component {
     this.setState({
       edits
     });
-    const newPublic = !news[index]._public;
-    setPublic(news[index].id, newPublic)
+    const newPublic = !gallery[index]._public;
+    setPublic(gallery[index].id, newPublic)
       .then((res) => {
-        news[index]._public = !news[index]._public;
+        gallery[index]._public = !gallery[index]._public;
         edits[index].processing = false;
         console.log(res);
         this.setState({
-          news,
+          gallery,
           edits
         });
       })
@@ -220,24 +218,24 @@ export class News extends Component {
         edits[index].publicError = err;
         this.setState({
           edits,
-          news
+          gallery
         });
       });
   };
 
   handleTitleChange = (index, value) => {
-    const { newsChange } = this.state;
-    newsChange[index].title = value;
+    const { galleryChange } = this.state;
+    galleryChange[index].title = value;
     this.setState({
-      newsChange
+      galleryChange
     });
   };
 
   handleSubTitleChange = (index, value) => {
-    const { newsChange } = this.state;
-    newsChange[index].subtitle = value;
+    const { galleryChange } = this.state;
+    galleryChange[index].subtitle = value;
     this.setState({
-      newsChange
+      galleryChange
     });
   };
 
@@ -267,20 +265,20 @@ export class News extends Component {
   };
 
   handleConfirmRemove = (index) => {
-    const { edits, news, newsChange } = this.state;
+    const { edits, gallery, galleryChange } = this.state;
     edits[index].processing = true;
     edits[index].deleteError = "";
     this.setState({
       edits
     });
 
-    remove(news[index].id)
+    remove(gallery[index].id)
       .then((res) => {
-        news.splice(index, 1);
+        gallery.splice(index, 1);
         edits.splice(index, 1);
-        newsChange.splice(index, 1);
+        galleryChange.splice(index, 1);
         this.setState({
-          news,
+          gallery,
           edits
         });
       })
@@ -294,23 +292,23 @@ export class News extends Component {
   };
 
   handleImageChange = (index, image) => {
-    const { edits, news, newsChange } = this.state;
+    const { edits, gallery, galleryChange } = this.state;
     if (edits[index].add) {
-      news[index].thumdbImg = image;
-      newsChange[index].thumdbImg = image;
+      gallery[index].thumdbImg = image;
+      galleryChange[index].thumdbImg = image;
       this.setState({
-        news
+        gallery
       });
       return;
     }
-    updateImage(news[index].id, image)
+    updateImage(gallery[index].id, image)
       .then((res) => {
-        const { news, newsChange } = this.state;
-        news[index].thumdbImg = image;
-        newsChange[index].thumdbImg = image;
+        const { gallery, galleryChange } = this.state;
+        gallery[index].thumdbImg = image;
+        galleryChange[index].thumdbImg = image;
         this.setState({
-          news,
-          newsChange
+          gallery,
+          galleryChange
         });
       })
       .catch((err) => {});
@@ -319,14 +317,20 @@ export class News extends Component {
   handleEditContent = (index) => {};
 
   render() {
-    const { news, newsChange, edits, fetching, fetchFail } = this.state;
+    const { gallery, galleryChange, edits, fetching, fetchFail } = this.state;
     return (
       <>
         <header>
-          <h1>ข่าวสาร</h1>
+          <h1>แกลเลอรี</h1>
         </header>
-        <NewsEditor />
-        <Table striped bordered hover size="sm" className="text-center">
+        <Table
+          responsive="sm"
+          striped
+          bordered
+          hover
+          size="sm"
+          className="text-center"
+        >
           <thead>
             <tr>
               <th style={{ width: "3%" }}>#</th>
@@ -359,10 +363,10 @@ export class News extends Component {
                   {`${fetchFail}`}
                 </td>
               </tr>
-            ) : news.length > 0 ? (
-              news.map((item, i) => {
+            ) : gallery.length > 0 ? (
+              gallery.map((item, i) => {
                 return (
-                  <tr key={`news-${i}`}>
+                  <tr key={`gallery-${i}`}>
                     <td className="v-center">{i + 1}</td>
                     <td>
                       <ImageEdit
@@ -370,14 +374,14 @@ export class News extends Component {
                         height={120}
                         showFileBrowserOnClick={true}
                         cropAspect={1}
-                        path="news_images"
+                        path="gallery_images"
                         onUploadDone={(imageName) =>
                           this.handleImageChange(i, imageName)
                         }
                         thumbnailUrl={
                           (item &&
                             item.thumdbImg &&
-                            getNewsImage(item.thumdbImg)) ||
+                            getGalleryImage(item.thumdbImg)) ||
                           "https://via.placeholder.com/120x120?text=No image"
                         }
                       />
@@ -387,7 +391,7 @@ export class News extends Component {
                         <td className="v-center">
                           <FormControl
                             disabled={edits[i].processing}
-                            value={newsChange[i].title}
+                            value={galleryChange[i].title}
                             size="sm"
                             onChange={(e) =>
                               this.handleTitleChange(i, e.target.value)
@@ -400,7 +404,7 @@ export class News extends Component {
                         <td className="v-center">
                           <FormControl
                             disabled={edits[i].processing}
-                            value={newsChange[i].subtitle}
+                            value={galleryChange[i].subtitle}
                             size="sm"
                             onChange={(e) =>
                               this.handleSubTitleChange(i, e.target.value)
@@ -559,4 +563,4 @@ const PublicButton = ({ _key, isPublic, onClick, loading, error }) => {
   );
 };
 
-export default News;
+export default Gallery;
