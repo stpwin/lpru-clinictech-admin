@@ -4,9 +4,9 @@ import AutosuggestHighlightMatch from "autosuggest-highlight/match";
 import AutosuggestHighlightParse from "autosuggest-highlight/parse";
 import Autosuggest from "react-autosuggest";
 import "./autosuggest-style.css";
-// import { FaUser, FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 import { getOwnersExcept } from "./specialistHelpers";
 import { getOwnerImage } from "../../helpers";
+// import {firebaseAuthContext} from "../../providers/AuthProvider"
 
 function escapeRegexCharacters(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -54,16 +54,16 @@ export const AddOwnerModal = forwardRef((props, ref) => {
   const [selectedOwner, setSelectedOwner] = useState({
     id: null,
     name: null,
-    image: null,
+    image: null
   });
   const [error, setError] = useState("");
 
   useImperativeHandle(ref, () => ({
-    FetchOwners: (specialistID) => {
+    FetchOwners: (idToken, specialistID) => {
       setOwners([]);
       setValue("");
 
-      getOwnersExcept(specialistID)
+      getOwnersExcept(idToken, specialistID)
         .then((res) => {
           setOwners(res);
           // console.log("Fetch done", res);
@@ -78,7 +78,7 @@ export const AddOwnerModal = forwardRef((props, ref) => {
     Clear: () => {
       setError();
       setSelectedOwner({ id: null, name: null, image: null });
-    },
+    }
   }));
 
   const onChange = (e, { newValue }) => {
@@ -121,7 +121,7 @@ export const AddOwnerModal = forwardRef((props, ref) => {
   const inputProps = {
     placeholder: "",
     value,
-    onChange,
+    onChange
   };
 
   return (

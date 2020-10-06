@@ -1,32 +1,30 @@
-import { handleResponse, handleFetchError }
- from "../../helpers"
+import { handleResponse, handleFetchError } from "../../helpers";
 import { apiUrl } from "../../config";
 
-export const getDownloads = () => {
+export const getDownloads = (idToken) => {
   const requestOptions = {
     method: "GET",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     }
   };
 
-  return fetch(`${apiUrl}/downloads/all.php`, requestOptions)
+  return fetch(`${apiUrl}/downloads/manage/all.php`, requestOptions)
     .then(handleResponse)
     .then((res) => {
       return res;
     })
     .catch(handleFetchError);
-}
+};
 
-export const createDownload = (title) => {
+export const createDownload = (idToken, title) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ title }),
+    body: JSON.stringify({ title })
   };
-
 
   return fetch(`${apiUrl}/downloads/manage/create.php`, requestOptions)
     .then(handleResponse)
@@ -34,15 +32,15 @@ export const createDownload = (title) => {
       return res;
     })
     .catch(handleFetchError);
-}
+};
 
-export const createFiles = (files) => {
+export const createFiles = (idToken, files) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ files }),
+    body: JSON.stringify({ files })
   };
 
   return fetch(`${apiUrl}/downloads/manage/createFiles.php`, requestOptions)
@@ -53,13 +51,13 @@ export const createFiles = (files) => {
     .catch(handleFetchError);
 };
 
-export const deleteFile = (id) => {
+export const deleteFile = (idToken, id) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ id }),
+    body: JSON.stringify({ id })
   };
 
   return fetch(`${apiUrl}/downloads/manage/deleteFile.php`, requestOptions)
@@ -68,15 +66,15 @@ export const deleteFile = (id) => {
       return res;
     })
     .catch(handleFetchError);
-}
+};
 
-export const deleteDownload = (id) => {
+export const deleteDownload = (idToken, id) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ id }),
+    body: JSON.stringify({ id })
   };
 
   return fetch(`${apiUrl}/downloads/manage/deleteDownload.php`, requestOptions)

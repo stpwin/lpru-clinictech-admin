@@ -1,11 +1,11 @@
 import { handleResponse, handleFetchError } from "../../helpers";
 import { apiUrl } from "../../config";
 
-export const getGallery = () => {
+export const getGallery = (idToken) => {
   const requestOptions = {
     method: "GET",
     headers: {
-      Accept: "application/json"
+      "X-Token": idToken
     }
   };
 
@@ -17,11 +17,11 @@ export const getGallery = () => {
     .catch(handleFetchError);
 };
 
-export const create = (news) => {
+export const create = (idToken, news) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json"
+      "X-Token": idToken
     },
     body: JSON.stringify({ ...news })
   };
@@ -34,11 +34,11 @@ export const create = (news) => {
     .catch(handleFetchError);
 };
 
-export const setPublic = (id, _public) => {
+export const setPublic = (idToken, id, _public) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json"
+      "X-Token": idToken
     },
     body: JSON.stringify({ id, _public: _public ? 1 : 0 })
   };
@@ -51,11 +51,11 @@ export const setPublic = (id, _public) => {
     .catch(handleFetchError);
 };
 
-export const updateInfo = (id, title, subtitle) => {
+export const updateInfo = (idToken, id, title, subtitle) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json"
+      "X-Token": idToken
     },
     body: JSON.stringify({ id, title, subtitle })
   };
@@ -68,11 +68,11 @@ export const updateInfo = (id, title, subtitle) => {
     .catch(handleFetchError);
 };
 
-export const updateImage = (id, image) => {
+export const updateImage = (idToken, id, image) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json"
+      "X-Token": idToken
     },
     body: JSON.stringify({ id, image })
   };
@@ -85,11 +85,11 @@ export const updateImage = (id, image) => {
     .catch(handleFetchError);
 };
 
-export const remove = (id) => {
+export const remove = (idToken, id) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json"
+      "X-Token": idToken
     },
     body: JSON.stringify({ id })
   };

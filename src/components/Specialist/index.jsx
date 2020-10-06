@@ -2,7 +2,7 @@ import React, { Component, createRef } from "react";
 import { Table, Button, Spinner, Row, Col } from "react-bootstrap";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import Resizer from "react-image-file-resizer";
-
+import { firebaseAuthContext } from "../../providers/AuthProvider";
 import {
   getSpecialist,
   createSpecialist,
@@ -13,7 +13,7 @@ import {
   removeDescription,
   addOwner,
   createOwner,
-  removeOwnerSpecialist,
+  removeOwnerSpecialist
 } from "./specialistHelpers";
 
 import { getSpecialistImage } from "../../helpers";
@@ -42,7 +42,7 @@ export class Specialist extends Component {
       crop: { x: 0, y: 0 },
       zoom: 1,
       aspect: 4 / 3,
-      croppedAreaPixels: {},
+      croppedAreaPixels: {}
     },
     descriptionText: [],
     addingDescriptionList: [],
@@ -50,7 +50,7 @@ export class Specialist extends Component {
     showAddOwner: false,
     ownersSuggestion: [],
     ownerAddSpecialistId: null,
-    currentAddOwnerIndex: null,
+    currentAddOwnerIndex: null
   };
 
   uploadFileRef = createRef();
@@ -58,13 +58,13 @@ export class Specialist extends Component {
 
   handleCropChange = (crop) => {
     this.setState({
-      crop: { ...this.state.crop, crop },
+      crop: { ...this.state.crop, crop }
     });
   };
 
   handleCropComplete = (croppedArea, croppedAreaPixels) => {
     this.setState({
-      crop: { ...this.state.crop, croppedAreaPixels },
+      crop: { ...this.state.crop, croppedAreaPixels }
     });
   };
 
@@ -73,21 +73,21 @@ export class Specialist extends Component {
       specialist: [],
       fetching: true,
       createFail: "",
-      removingDescriptionList: {},
+      removingDescriptionList: {}
     });
-    getSpecialist()
+    getSpecialist(this.context.token)
       .then((res) => {
         this.setState({
           specialist: res,
           fetching: false,
-          removingDescriptionList: {},
+          removingDescriptionList: {}
         });
         // console.log(res);
       })
       .catch((err) => {
         this.setState({
           fetchFail: err,
-          fetching: false,
+          fetching: false
         });
       });
   };
@@ -100,19 +100,19 @@ export class Specialist extends Component {
     this.setState({
       specialistTitle: "",
       specialistImageUrl: "",
-      showAddSpecialist: true,
+      showAddSpecialist: true
     });
   };
 
   handleHideAddSpecialist = () => {
     this.setState({
-      showAddSpecialist: false,
+      showAddSpecialist: false
     });
   };
 
   handleAddSpecialistTitleChange = (e) => {
     this.setState({
-      specialistTitle: e.target.value,
+      specialistTitle: e.target.value
     });
   };
 
@@ -120,13 +120,13 @@ export class Specialist extends Component {
     const {
       specialistTitle,
       specialistImageUrl,
-      crop: { croppedAreaPixels },
+      crop: { croppedAreaPixels }
     } = this.state;
     if (!specialistTitle) return;
 
     this.setState({
       creating: true,
-      createFail: "",
+      createFail: ""
     });
 
     let imageUrl = "";
@@ -137,7 +137,7 @@ export class Specialist extends Component {
       descriptionIDs: [],
       owner: [],
       thumbnail: "",
-      created: null,
+      created: null
     };
     //upload image
     if (specialistImageUrl) {
@@ -151,12 +151,12 @@ export class Specialist extends Component {
         console.warn(e);
         this.setState({
           creating: false,
-          createFail: e,
+          createFail: e
         });
         return;
       }
     }
-    createSpecialist(specialistTitle, imageUrl)
+    createSpecialist(this.context.token, specialistTitle, imageUrl)
       .then((res) => {
         // console.log(res);
         newSpecialist.thumbnail = imageUrl;
@@ -170,7 +170,7 @@ export class Specialist extends Component {
           {
             creating: false,
             createFail: "",
-            specialist: newSpecialists,
+            specialist: newSpecialists
             // removingDescriptionList: {},
           },
           this.handleHideAddSpecialist
@@ -179,7 +179,7 @@ export class Specialist extends Component {
       .catch((err) => {
         this.setState({
           creating: false,
-          createFail: err,
+          createFail: err
         });
       });
   };
@@ -189,9 +189,9 @@ export class Specialist extends Component {
     let { specialist, removingList, removingDescriptionList } = this.state;
     removingList[index] = true;
     this.setState({
-      removingList,
+      removingList
     });
-    removeSpecialist(id)
+    removeSpecialist(this.context.token, id)
       .then((res) => {
         delete specialist[index];
         delete removingList[index];
@@ -199,7 +199,7 @@ export class Specialist extends Component {
         this.setState({
           specialist,
           removingList,
-          removingDescriptionList,
+          removingDescriptionList
         });
       })
       .catch((err) => {
@@ -213,9 +213,9 @@ export class Specialist extends Component {
     if (!descValue) return;
     addingDescriptionList[index] = true;
     this.setState({
-      addingDescriptionList,
+      addingDescriptionList
     });
-    addDescription(id, descValue)
+    addDescription(this.context.token, id, descValue)
       .then((res) => {
         let { addingDescriptionList } = this.state;
         delete addingDescriptionList[index];
@@ -227,14 +227,14 @@ export class Specialist extends Component {
         this.setState({
           specialist,
           descriptionText,
-          addingDescriptionList,
+          addingDescriptionList
         });
       })
       .catch((err) => {
         let { addingDescriptionList } = this.state;
         delete addingDescriptionList[index];
         this.setState({
-          addingDescriptionList,
+          addingDescriptionList
         });
         console.warn(err);
       });
@@ -250,7 +250,7 @@ export class Specialist extends Component {
         descriptionText[index] = value;
         // console.log("CHANGE");
         this.setState({
-          descriptionText,
+          descriptionText
         });
         this.inputTimeout = null;
       }.bind(this),
@@ -267,7 +267,7 @@ export class Specialist extends Component {
     if (removingDescriptionList[sindex]) {
       removingDescriptionList[sindex] = {
         ...removingDescriptionList[sindex],
-        ...{ [index]: true },
+        ...{ [index]: true }
       };
     } else {
       removingDescriptionList[sindex] = {};
@@ -276,9 +276,9 @@ export class Specialist extends Component {
 
     // console.log(removingDescriptionList);
     this.setState({
-      removingDescriptionList,
+      removingDescriptionList
     });
-    removeDescription(id)
+    removeDescription(this.context.token, id)
       .then((res) => {
         // console.log(res);
         let { specialist, removingDescriptionList } = this.state;
@@ -287,7 +287,7 @@ export class Specialist extends Component {
         delete removingDescriptionList[sindex][index];
         this.setState({
           specialist,
-          removingDescriptionList,
+          removingDescriptionList
         });
       })
       .catch((err) => {});
@@ -298,21 +298,21 @@ export class Specialist extends Component {
     let { specialist, ownerAddSpecialistId, currentAddOwnerIndex } = this.state;
     if (!id) {
       // console.log("Create new");
-      return createOwner({ name, image })
+      return createOwner(this.context.token, { name, image })
         .then((res) => {
           this.suggestionRef.current.Clear();
-          addOwner(ownerAddSpecialistId, res.owner_id)
+          addOwner(this.context.token, ownerAddSpecialistId, res.owner_id)
             .then((res) => {
               specialist[currentAddOwnerIndex].owner.push({
                 id: res.owner_id,
                 image,
-                name,
+                name
               });
               this.setState({
                 showAddOwner: false,
                 ownerAddSpecialistId: null,
                 currentAddOwnerIndex: null,
-                specialist,
+                specialist
               });
               // console.log(res);
             })
@@ -333,13 +333,13 @@ export class Specialist extends Component {
         specialist[currentAddOwnerIndex].owner.push({
           id: res.owner_id,
           image,
-          name,
+          name
         });
         this.setState({
           showAddOwner: false,
           ownerAddSpecialistId: null,
           currentAddOwnerIndex: null,
-          specialist,
+          specialist
         });
         // console.log(res);
       })
@@ -354,21 +354,21 @@ export class Specialist extends Component {
     this.setState({
       showAddOwner: true,
       ownerAddSpecialistId: specialistID,
-      currentAddOwnerIndex,
+      currentAddOwnerIndex
     });
     this.suggestionRef.current.Clear();
-    this.suggestionRef.current.FetchOwners(specialistID);
+    this.suggestionRef.current.FetchOwners(this.context.token, specialistID);
   };
 
   handleRemoveOwner = (sindex, index, id) => {
     // console.log({ sindex, index, id });
 
     let specialist = this.state.specialist;
-    removeOwnerSpecialist(id)
+    removeOwnerSpecialist(this.context.token, id)
       .then((res) => {
         delete specialist[sindex].owner[index];
         this.setState({
-          specialist,
+          specialist
         });
       })
       .catch((err) => {
@@ -387,7 +387,7 @@ export class Specialist extends Component {
       (uri) => {
         this.setState({
           crop: { ...this.state.crop, crop: { x: 0, y: 0 } },
-          specialistImageUrl: uri,
+          specialistImageUrl: uri
         });
       },
       "base64",
@@ -397,7 +397,7 @@ export class Specialist extends Component {
   };
 
   handleTitleChangeSave = (sid, title, callback) => {
-    changeTitle(sid, title)
+    changeTitle(this.context.token, sid, title)
       .then((res) => {
         callback(title);
       })
@@ -407,12 +407,12 @@ export class Specialist extends Component {
   };
 
   handleImageChangeSave = (index, sid, imageName) => {
-    changeImage(sid, imageName)
+    changeImage(this.context.token, sid, imageName)
       .then((res) => {
         let { specialist } = this.state;
         specialist[index].thumbnail = imageName;
         this.setState({
-          specialist,
+          specialist
         });
       })
       .catch((err) => {});
@@ -434,7 +434,7 @@ export class Specialist extends Component {
       addingDescriptionList,
       removingDescriptionList,
       showAddOwner,
-      ownersSuggestion,
+      ownersSuggestion
     } = this.state;
     return (
       <>
@@ -618,5 +618,5 @@ export class Specialist extends Component {
     );
   }
 }
-
+Specialist.contextType = firebaseAuthContext;
 export default Specialist;

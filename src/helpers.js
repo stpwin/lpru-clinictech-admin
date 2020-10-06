@@ -41,7 +41,7 @@ export const handleNotfound = (e) => {
 
 export const handleFetchError = (e) => {
   if (e instanceof TypeError) {
-    Promise.reject("ไม่สามารถติดต่อเซิร์ฟเวอร์ได้");
+    return Promise.reject("ไม่สามารถติดต่อเซิร์ฟเวอร์ได้");
   }
   console.error("Fetch fail:", e);
   // Promise.reject(e);

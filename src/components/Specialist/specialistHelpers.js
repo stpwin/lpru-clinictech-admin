@@ -1,15 +1,16 @@
 import { handleResponse, handleFetchError } from "../../helpers";
 import { apiUrl } from "../../config";
 
-export const getSpecialist = () => {
+export const getSpecialist = (idToken) => {
   const requestOptions = {
     method: "GET",
     headers: {
       Accept: "application/json",
-    },
+      "X-Token": idToken
+    }
   };
 
-  return fetch(`${apiUrl}/specialist/all.php`, requestOptions)
+  return fetch(`${apiUrl}/specialist/manage/all.php`, requestOptions)
     .then(handleResponse)
     .then((res) => {
       return res;
@@ -17,13 +18,13 @@ export const getSpecialist = () => {
     .catch(handleFetchError);
 };
 
-export const createSpecialist = (title, thumbnail) => {
+export const createSpecialist = (idToken, title, thumbnail) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ title, thumbnail }),
+    body: JSON.stringify({ title, thumbnail })
   };
 
   return fetch(`${apiUrl}/specialist/manage/create.php`, requestOptions)
@@ -34,13 +35,13 @@ export const createSpecialist = (title, thumbnail) => {
     .catch(handleFetchError);
 };
 
-export const changeTitle = (specialist_id, title) => {
+export const changeTitle = (idToken, specialist_id, title) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ specialist_id, title }),
+    body: JSON.stringify({ specialist_id, title })
   };
 
   return fetch(`${apiUrl}/specialist/manage/changeTitle.php`, requestOptions)
@@ -51,13 +52,13 @@ export const changeTitle = (specialist_id, title) => {
     .catch(handleFetchError);
 };
 
-export const changeImage = (specialist_id, thumbnail) => {
+export const changeImage = (idToken, specialist_id, thumbnail) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ specialist_id, thumbnail }),
+    body: JSON.stringify({ specialist_id, thumbnail })
   };
 
   return fetch(`${apiUrl}/specialist/manage/changeImage.php`, requestOptions)
@@ -68,13 +69,13 @@ export const changeImage = (specialist_id, thumbnail) => {
     .catch(handleFetchError);
 };
 
-export const removeSpecialist = (id) => {
+export const removeSpecialist = (idToken, id) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ id }),
+    body: JSON.stringify({ id })
   };
 
   return fetch(
@@ -88,13 +89,13 @@ export const removeSpecialist = (id) => {
     .catch(handleFetchError);
 };
 
-export const addDescription = (specialist_id, description) => {
+export const addDescription = (idToken, specialist_id, description) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ specialist_id, description }),
+    body: JSON.stringify({ specialist_id, description })
   };
 
   return fetch(`${apiUrl}/specialist/manage/addDescription.php`, requestOptions)
@@ -105,13 +106,13 @@ export const addDescription = (specialist_id, description) => {
     .catch(handleFetchError);
 };
 
-export const removeDescription = (id) => {
+export const removeDescription = (idToken, id) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ id }),
+    body: JSON.stringify({ id })
   };
 
   return fetch(
@@ -125,13 +126,13 @@ export const removeDescription = (id) => {
     .catch(handleFetchError);
 };
 
-export const getOwnersExcept = (except) => {
+export const getOwnersExcept = (idToken, except) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ except }),
+    body: JSON.stringify({ except })
   };
 
   return fetch(
@@ -145,12 +146,12 @@ export const getOwnersExcept = (except) => {
     .catch(handleFetchError);
 };
 
-export const getAllOwners = () => {
+export const getAllOwners = (idToken) => {
   const requestOptions = {
     method: "GET",
     headers: {
-      Accept: "application/json",
-    },
+      "X-Token": idToken
+    }
     // body: JSON.stringify({ except }),
   };
 
@@ -162,13 +163,13 @@ export const getAllOwners = () => {
     .catch(handleFetchError);
 };
 
-export const getOwnerByID = (id) => {
+export const getOwnerByID = (idToken, id) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ id }),
+    body: JSON.stringify({ id })
   };
 
   return fetch(`${apiUrl}/specialist/manage/getOwnerByID.php`, requestOptions)
@@ -179,13 +180,13 @@ export const getOwnerByID = (id) => {
     .catch(handleFetchError);
 };
 
-export const addOwner = (specialist_id, owner_id) => {
+export const addOwner = (idToken, specialist_id, owner_id) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ specialist_id, owner_id }),
+    body: JSON.stringify({ specialist_id, owner_id })
   };
 
   return fetch(`${apiUrl}/specialist/manage/addOwner.php`, requestOptions)
@@ -196,13 +197,13 @@ export const addOwner = (specialist_id, owner_id) => {
     .catch(handleFetchError);
 };
 
-export const createOwner = (owner) => {
+export const createOwner = (idToken, owner) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ owner }),
+    body: JSON.stringify({ owner })
   };
 
   return fetch(`${apiUrl}/specialist/manage/createOwner.php`, requestOptions)
@@ -213,13 +214,13 @@ export const createOwner = (owner) => {
     .catch(handleFetchError);
 };
 
-export const updateOwner = (owner) => {
+export const updateOwner = (idToken, owner) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ owner }),
+    body: JSON.stringify({ owner })
   };
 
   return fetch(`${apiUrl}/specialist/manage/updateOwner.php`, requestOptions)
@@ -230,13 +231,13 @@ export const updateOwner = (owner) => {
     .catch(handleFetchError);
 };
 
-export const updateOwnerImage = (owner_id, image) => {
+export const updateOwnerImage = (idToken, owner_id, image) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ owner_id, image }),
+    body: JSON.stringify({ owner_id, image })
   };
 
   return fetch(
@@ -250,13 +251,13 @@ export const updateOwnerImage = (owner_id, image) => {
     .catch(handleFetchError);
 };
 
-export const removeOwner = (id) => {
+export const removeOwner = (idToken, id) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ id }),
+    body: JSON.stringify({ id })
   };
 
   return fetch(`${apiUrl}/specialist/manage/removeOwner.php`, requestOptions)
@@ -267,13 +268,13 @@ export const removeOwner = (id) => {
     .catch(handleFetchError);
 };
 
-export const removeOwnerSpecialist = (id) => {
+export const removeOwnerSpecialist = (idToken, id) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ id }),
+    body: JSON.stringify({ id })
   };
 
   return fetch(

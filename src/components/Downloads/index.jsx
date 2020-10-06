@@ -1,10 +1,6 @@
 import React, { Component, createRef } from "react";
-
 import { storage } from "../../firebaseApp";
-// import uuid from "uuid/dist/v4"
-
 import { Button, Modal, Form, Spinner, Table, Badge } from "react-bootstrap";
-
 import {
   getDownloads,
   createDownload,
@@ -12,8 +8,8 @@ import {
   deleteFile,
   deleteDownload
 } from "./downloadsHelper";
-
 import { FaTrash, FaPlus, FaCheck } from "react-icons/fa";
+import { firebaseAuthContext } from "../../providers/AuthProvider";
 
 const uploadAsPromise = (
   fileObj,
@@ -93,9 +89,9 @@ export class Downloads extends Component {
   hiddenFileInput = createRef();
 
   getDownloadList = () => {
-    return getDownloads()
+    return getDownloads(this.context.token)
       .then((res) => {
-        console.log(res);
+        // console.log(res);
         return this.setState({
           fetching: false,
           downloads: res
@@ -148,11 +144,11 @@ export class Downloads extends Component {
         fetchFail: ""
       },
       () => {
-        createDownload(downloadTitle)
+        createDownload(this.context.token, downloadTitle)
           .then((res) => {
-            console.log(res);
+            // console.log(res);
             const { downloads_id } = res;
-            console.log("Create done id:", downloads_id);
+            // console.log("Create done id:", downloads_id);
 
             this.setState(
               {
@@ -174,7 +170,7 @@ export class Downloads extends Component {
   };
 
   handleDeleteDownload = (downloadsID) => {
-    deleteDownload(downloadsID)
+    deleteDownload(this.context.token, downloadsID)
       .then((res) => {
         // console.log(res);
         this.getDownloadList();
@@ -192,7 +188,7 @@ export class Downloads extends Component {
 
   handleFileDelete = (fileID) => {
     // console.log(fileID)
-    deleteFile(fileID)
+    deleteFile(this.context.token, fileID)
       .then((res) => {
         // console.log(res)
         this.getDownloadList();
@@ -222,7 +218,7 @@ export class Downloads extends Component {
       const files = uploadList.map((file) => {
         return [uploadTo[0], file.name, file.url];
       });
-      createFiles(files)
+      createFiles(this.context.token, files)
         .then((res) => {
           // console.log(res)
         })
@@ -303,7 +299,7 @@ export class Downloads extends Component {
               </tr>
             ) : (
               <>
-                {downloads &&
+                {downloads.length > 0 ? (
                   downloads.map((ele, i) => {
                     return (
                       <tr key={`downloads-${i}`}>
@@ -331,7 +327,12 @@ export class Downloads extends Component {
                         </td>
                       </tr>
                     );
-                  })}
+                  })
+                ) : (
+                  <tr className="text-center">
+                    <td colSpan={4}>ไม่มีรายการ</td>
+                  </tr>
+                )}
               </>
             )}
           </tbody>
@@ -497,4 +498,5 @@ const FilesTable = ({ files, onAddClick, onTrashClick }) => {
   );
 };
 
+Downloads.contextType = firebaseAuthContext;
 export default Downloads;

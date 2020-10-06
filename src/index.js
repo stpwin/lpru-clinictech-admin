@@ -1,18 +1,22 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
+import * as serviceWorker from "./serviceWorker";
 import { BrowserRouter } from "react-router-dom";
+// import UserProvider from "./providers/UserProvider";
+import AuthProvider from "./providers/AuthProvider";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import './index.css';
+import "./index.css";
 
 ReactDOM.render(
-  <React.StrictMode>
-    <BrowserRouter basename={process.env.PUBLIC_URL}>
+  // <React.StrictMode>
+  <BrowserRouter basename={process.env.PUBLIC_URL}>
+    <AuthProvider>
       <App />
-    </BrowserRouter>
-  </React.StrictMode>,
+    </AuthProvider>
+  </BrowserRouter>,
+  // </React.StrictMode>,
   document.getElementById("root")
 );
 

@@ -1,12 +1,12 @@
 import { handleResponse, handleFetchError } from "../../helpers";
 import { apiUrl } from "../../config";
 
-export const getNews = () => {
+export const getNews = (idToken) => {
   const requestOptions = {
     method: "GET",
     headers: {
-      Accept: "application/json",
-    },
+      "X-Token": idToken
+    }
   };
 
   return fetch(`${apiUrl}/news/manage/all.php`, requestOptions)
@@ -17,13 +17,13 @@ export const getNews = () => {
     .catch(handleFetchError);
 };
 
-export const create = (news) => {
+export const create = (idToken, news) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ ...news }),
+    body: JSON.stringify({ ...news })
   };
 
   return fetch(`${apiUrl}/news/manage/create.php`, requestOptions)
@@ -34,13 +34,13 @@ export const create = (news) => {
     .catch(handleFetchError);
 };
 
-export const setPublic = (id, _public) => {
+export const setPublic = (idToken, id, _public) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ id, _public: _public ? 1 : 0 }),
+    body: JSON.stringify({ id, _public: _public ? 1 : 0 })
   };
 
   return fetch(`${apiUrl}/news/manage/setPublic.php`, requestOptions)
@@ -51,13 +51,13 @@ export const setPublic = (id, _public) => {
     .catch(handleFetchError);
 };
 
-export const updateInfo = (id, title, subtitle) => {
+export const updateInfo = (idToken, id, title, subtitle) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ id, title, subtitle }),
+    body: JSON.stringify({ id, title, subtitle })
   };
 
   return fetch(`${apiUrl}/news/manage/update.php`, requestOptions)
@@ -68,13 +68,13 @@ export const updateInfo = (id, title, subtitle) => {
     .catch(handleFetchError);
 };
 
-export const updateImage = (id, image) => {
+export const updateImage = (idToken, id, image) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ id, image }),
+    body: JSON.stringify({ id, image })
   };
 
   return fetch(`${apiUrl}/news/manage/updateImage.php`, requestOptions)
@@ -85,13 +85,13 @@ export const updateImage = (id, image) => {
     .catch(handleFetchError);
 };
 
-export const remove = (id) => {
+export const remove = (idToken, id) => {
   const requestOptions = {
     method: "POST",
     headers: {
-      Accept: "application/json",
+      "X-Token": idToken
     },
-    body: JSON.stringify({ id }),
+    body: JSON.stringify({ id })
   };
 
   return fetch(`${apiUrl}/news/manage/delete.php`, requestOptions)

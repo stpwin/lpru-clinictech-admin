@@ -28,6 +28,7 @@ import {
 import { ImageEdit } from "../ImageEdit";
 import { getNewsImage } from "../../helpers";
 import NewsEditor from "./NewsEditor";
+import { firebaseAuthContext } from "../../providers/AuthProvider";
 export class News extends Component {
   state = {
     fetching: true,
@@ -38,7 +39,7 @@ export class News extends Component {
   };
 
   componentDidMount() {
-    getNews()
+    getNews(this.context.token)
       .then((res) => {
         // console.log(res);
         const edits = res.map((item) => {
@@ -116,7 +117,7 @@ export class News extends Component {
 
     if (edits[index].add) {
       //Create new function here
-      create(newsChange[index])
+      create(this.context.token, newsChange[index])
         .then((res) => {
           edits[index].processing = false;
           edits[index].edit = false;
@@ -140,6 +141,7 @@ export class News extends Component {
 
     //Update function here
     updateInfo(
+      this.context.token,
       news[index].id,
       newsChange[index].title,
       newsChange[index].subtitle
@@ -205,7 +207,7 @@ export class News extends Component {
       edits
     });
     const newPublic = !news[index]._public;
-    setPublic(news[index].id, newPublic)
+    setPublic(this.context.token, news[index].id, newPublic)
       .then((res) => {
         news[index]._public = !news[index]._public;
         edits[index].processing = false;
@@ -274,7 +276,7 @@ export class News extends Component {
       edits
     });
 
-    remove(news[index].id)
+    remove(this.context.token, news[index].id)
       .then((res) => {
         news.splice(index, 1);
         edits.splice(index, 1);
@@ -303,7 +305,7 @@ export class News extends Component {
       });
       return;
     }
-    updateImage(news[index].id, image)
+    updateImage(this.context.token, news[index].id, image)
       .then((res) => {
         const { news, newsChange } = this.state;
         news[index].thumdbImg = image;
@@ -559,4 +561,5 @@ const PublicButton = ({ _key, isPublic, onClick, loading, error }) => {
   );
 };
 
+News.contextType = firebaseAuthContext;
 export default News;

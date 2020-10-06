@@ -1,11 +1,12 @@
 import React, { Component } from "react";
+import { firebaseAuthContext } from "../../providers/AuthProvider";
 import {
   Table,
   Button,
   Spinner,
   OverlayTrigger,
   Tooltip,
-  FormControl,
+  FormControl
 } from "react-bootstrap";
 import { FaEdit, FaPlus, FaSave, FaSignOutAlt, FaTrash } from "react-icons/fa";
 import {
@@ -13,7 +14,7 @@ import {
   createOwner,
   updateOwner,
   removeOwner,
-  updateOwnerImage,
+  updateOwnerImage
 } from "./specialistHelpers";
 import { getOwnerImage } from "../../helpers";
 import { ImageEdit } from "../ImageEdit";
@@ -24,11 +25,11 @@ export class OwnerTable extends Component {
     fetchFail: "",
     owners: [],
     ownersChange: [],
-    edits: [],
+    edits: []
   };
 
   componentDidMount() {
-    getAllOwners()
+    getAllOwners(this.context.token)
       .then((res) => {
         // console.log(res);
         const edits = res.map((item) => {
@@ -37,20 +38,20 @@ export class OwnerTable extends Component {
             edit: false,
             processing: false,
             processFail: "",
-            delete: false,
+            delete: false
           };
         });
         this.setState({
           owners: res,
           ownersChange: JSON.parse(JSON.stringify(res)),
           edits,
-          fetching: false,
+          fetching: false
         });
       })
       .catch((err) => {
         this.setState({
           fetchFail: err,
-          fetching: false,
+          fetching: false
         });
       });
   }
@@ -59,7 +60,7 @@ export class OwnerTable extends Component {
     let { edits } = this.state;
     edits[index].edit = true;
     this.setState({
-      edits,
+      edits
     });
   };
   handleCancelEdit = (index) => {
@@ -77,7 +78,7 @@ export class OwnerTable extends Component {
     this.setState({
       edits,
       owners,
-      ownersChange,
+      ownersChange
     });
   };
 
@@ -86,43 +87,43 @@ export class OwnerTable extends Component {
     edits[index].processing = true;
     edits[index].processFail = "";
     this.setState({
-      edits,
+      edits
     });
 
     owners[index] = { ...ownersChange[index] };
 
     if (edits[index].add) {
-      return createOwner(owners[index])
+      return createOwner(this.context.token, owners[index])
         .then((res) => {
           edits[index].processing = false;
           edits[index].edit = false;
           edits[index].add = false;
           owners[index].id = res.owner_id;
           this.setState({
-            edits,
+            edits
           });
         })
         .catch((err) => {
           edits[index].processing = false;
           edits[index].processFail = err;
           this.setState({
-            edits,
+            edits
           });
         });
     }
-    updateOwner(owners[index])
+    updateOwner(this.context.token, owners[index])
       .then((res) => {
         edits[index].processing = false;
         edits[index].edit = false;
         this.setState({
-          edits,
+          edits
         });
       })
       .catch((err) => {
         edits[index].processing = false;
         edits[index].processFail = err;
         this.setState({
-          edits,
+          edits
         });
       });
   };
@@ -131,14 +132,14 @@ export class OwnerTable extends Component {
     let { edits } = this.state;
     edits[index].delete = true;
     this.setState({
-      edits,
+      edits
     });
   };
   handleCancelDelete = (index) => {
     let { edits } = this.state;
     edits[index].delete = false;
     this.setState({
-      edits,
+      edits
     });
   };
   handleConfirmDelete = (index, id) => {
@@ -147,9 +148,9 @@ export class OwnerTable extends Component {
     edits[index].processFail = "";
 
     this.setState({
-      edits,
+      edits
     });
-    removeOwner(id)
+    removeOwner(this.context.token, id)
       .then((res) => {
         let { owners, edits } = this.state;
         edits[index].processing = false;
@@ -157,7 +158,7 @@ export class OwnerTable extends Component {
         edits.splice(index, 1);
         this.setState({
           owners,
-          edits,
+          edits
         });
       })
       .catch((err) => {
@@ -166,7 +167,7 @@ export class OwnerTable extends Component {
         edits[index].processFail = err;
         this.setState({
           owners,
-          edits,
+          edits
         });
       });
   };
@@ -175,28 +176,28 @@ export class OwnerTable extends Component {
     const { ownersChange } = this.state;
     ownersChange[index].name = value;
     this.setState({
-      ownersChange,
+      ownersChange
     });
   };
   handleEmailChanged = (index, value) => {
     let { ownersChange } = this.state;
     ownersChange[index].email = value;
     this.setState({
-      ownersChange,
+      ownersChange
     });
   };
   handlePhoneChanged = (index, value) => {
     let { ownersChange } = this.state;
     ownersChange[index].phone = value;
     this.setState({
-      ownersChange,
+      ownersChange
     });
   };
   handlePlaceChanged = (index, value) => {
     let { ownersChange } = this.state;
     ownersChange[index].place = value;
     this.setState({
-      ownersChange,
+      ownersChange
     });
   };
 
@@ -205,16 +206,16 @@ export class OwnerTable extends Component {
     if (edits[index].add) {
       owners[index].image = image;
       this.setState({
-        owners,
+        owners
       });
       return;
     }
-    updateOwnerImage(id, image)
+    updateOwnerImage(this.context.token, id, image)
       .then((res) => {
         let { owners } = this.state;
         owners[index].image = image;
         this.setState({
-          owners,
+          owners
         });
       })
       .catch((err) => {});
@@ -228,7 +229,7 @@ export class OwnerTable extends Component {
       edit: true,
       processing: false,
       processFail: "",
-      delete: false,
+      delete: false
     });
     this.setState({ owners, edits });
   };
@@ -265,13 +266,13 @@ export class OwnerTable extends Component {
           <tbody className="fit-last-cell">
             {fetching ? (
               <tr>
-                <td colSpan={6}>
+                <td colSpan={7}>
                   <Spinner animation="border" />
                 </td>
               </tr>
             ) : fetchFail ? (
               <tr>
-                <td className="text-danger" colSpan={6}>
+                <td className="text-danger" colSpan={7}>
                   {fetchFail}
                 </td>
               </tr>
@@ -303,6 +304,7 @@ export class OwnerTable extends Component {
                         <td className="v-center">
                           <FormControl
                             size="sm"
+                            maxLength={100}
                             value={ownersChange[i].name}
                             onChange={(e) =>
                               this.handleNameChanged(i, e.target.value)
@@ -312,6 +314,7 @@ export class OwnerTable extends Component {
                         <td className="v-center">
                           <FormControl
                             size="sm"
+                            maxLength={50}
                             value={ownersChange[i].email}
                             onChange={(e) =>
                               this.handleEmailChanged(i, e.target.value)
@@ -321,6 +324,7 @@ export class OwnerTable extends Component {
                         <td className="v-center">
                           <FormControl
                             size="sm"
+                            maxLength={15}
                             value={ownersChange[i].phone}
                             onChange={(e) =>
                               this.handlePhoneChanged(i, e.target.value)
@@ -330,6 +334,7 @@ export class OwnerTable extends Component {
                         <td className="v-center">
                           <FormControl
                             as="textarea"
+                            maxLength={500}
                             rows={3}
                             size="sm"
                             value={ownersChange[i].place}
@@ -500,4 +505,5 @@ export class OwnerTable extends Component {
   }
 }
 
+OwnerTable.contextType = firebaseAuthContext;
 export default OwnerTable;

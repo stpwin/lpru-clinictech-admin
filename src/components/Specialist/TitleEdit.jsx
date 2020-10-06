@@ -1,25 +1,31 @@
 import React, { useState, useEffect } from "react";
-import { Button, FormControl, Spinner, InputGroup, FormText } from "react-bootstrap";
-import { FaEdit, FaSave } from 'react-icons/fa';
+import {
+  Button,
+  FormControl,
+  Spinner,
+  InputGroup,
+  FormText
+} from "react-bootstrap";
+import { FaEdit, FaSave } from "react-icons/fa";
 
 export const TitleEdit = ({ title, onSave }) => {
-  const [edit, setEdit] = useState(false)
-  const [saving, setSaving] = useState(false)
+  const [edit, setEdit] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [err, setErr] = useState("");
 
   useEffect(() => {
-    setNewTitle(title)
-  }, [title])
+    setNewTitle(title);
+  }, [title]);
 
   const handleSave = () => {
     setSaving(true);
     if (newTitle && newTitle !== title) {
-      return onSave(newTitle, callback)
+      return onSave(newTitle, callback);
     }
     setSaving(false);
     setEdit(false);
-  }
+  };
 
   const callback = (title: string, err: string = "") => {
     // console.log({ err, title });
@@ -35,22 +41,22 @@ export const TitleEdit = ({ title, onSave }) => {
     <>
       {edit ? (
         <>
-          <InputGroup >
+          <InputGroup>
             <InputGroup.Prepend>
               <Button
                 disabled={saving}
-                className='xxs'
-                variant='outline-info'
+                className="xxs"
+                variant="outline-info"
                 onClick={() => handleSave()}
               >
                 {saving ? (
                   <Spinner
-                    as='span'
-                    animation='border'
-                    size='sm'
-                    role='status'
-                    aria-hidden='true'
-                    className='mr-1'
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                    className="mr-1"
                   />
                 ) : (
                   <FaSave />
@@ -58,7 +64,8 @@ export const TitleEdit = ({ title, onSave }) => {
               </Button>
             </InputGroup.Prepend>
             <FormControl
-              size='sm'
+              size="sm"
+              maxLength={200}
               disabled={saving}
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
@@ -69,15 +76,15 @@ export const TitleEdit = ({ title, onSave }) => {
       ) : (
         <>
           <Button
-            className='xxs mr-2'
-            variant='outline-info'
+            className="xxs mr-2"
+            variant="outline-info"
             onClick={() => setEdit(true)}
           >
             <FaEdit />
           </Button>
-          <span className='align-middle'>{newTitle}</span>
+          <span className="align-middle">{newTitle}</span>
         </>
       )}
     </>
   );
-}
+};

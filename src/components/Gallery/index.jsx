@@ -27,6 +27,7 @@ import {
 } from "./galleryHelpers";
 import { ImageEdit } from "../ImageEdit";
 import { getGalleryImage } from "../../helpers";
+import { firebaseAuthContext } from "../../providers/AuthProvider";
 export class Gallery extends Component {
   state = {
     fetching: true,
@@ -37,7 +38,7 @@ export class Gallery extends Component {
   };
 
   componentDidMount() {
-    getGallery()
+    getGallery(this.context.token)
       .then((res) => {
         // console.log(res);
         const edits = res.map((item) => {
@@ -113,7 +114,7 @@ export class Gallery extends Component {
 
     if (edits[index].add) {
       //   Create new function here
-      create(galleryChange[index])
+      create(this.context.token, galleryChange[index])
         .then((res) => {
           edits[index].processing = false;
           edits[index].edit = false;
@@ -138,6 +139,7 @@ export class Gallery extends Component {
 
     //Update function here
     updateInfo(
+      this.context.token,
       gallery[index].id,
       galleryChange[index].title,
       galleryChange[index].subtitle
@@ -203,7 +205,7 @@ export class Gallery extends Component {
       edits
     });
     const newPublic = !gallery[index]._public;
-    setPublic(gallery[index].id, newPublic)
+    setPublic(this.context.token, gallery[index].id, newPublic)
       .then((res) => {
         gallery[index]._public = !gallery[index]._public;
         edits[index].processing = false;
@@ -272,7 +274,7 @@ export class Gallery extends Component {
       edits
     });
 
-    remove(gallery[index].id)
+    remove(this.context.token, gallery[index].id)
       .then((res) => {
         gallery.splice(index, 1);
         edits.splice(index, 1);
@@ -301,7 +303,7 @@ export class Gallery extends Component {
       });
       return;
     }
-    updateImage(gallery[index].id, image)
+    updateImage(this.context.token, gallery[index].id, image)
       .then((res) => {
         const { gallery, galleryChange } = this.state;
         gallery[index].thumdbImg = image;
@@ -563,4 +565,5 @@ const PublicButton = ({ _key, isPublic, onClick, loading, error }) => {
   );
 };
 
+Gallery.contextType = firebaseAuthContext;
 export default Gallery;
