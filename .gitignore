@@ -24,3 +24,4 @@ yarn-error.log*
 src/firebaseConfig.js
 src/config.js
 config.production.js
+src/components/Asks/credentials.json
