@@ -56,6 +56,7 @@ export class Asks extends Component {
       console.log(rows);
       this.setState({ fetching: false, asks });
     } catch (e) {
+      this.setState({ fetching: false, fetchFail: e });
       console.error("Error: ", e);
     }
   };

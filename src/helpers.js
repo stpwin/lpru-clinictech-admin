@@ -1,3 +1,5 @@
+import React from "react";
+
 export const handleResponse = async (response) => {
   if (response.status === 204) {
     return null;
@@ -59,4 +61,8 @@ export const getNewsImage = (image) => {
 };
 export const getGalleryImage = (image) => {
   return `https://firebasestorage.googleapis.com/v0/b/lpru-clinictech.appspot.com/o/gallery_images%2F${image}?alt=media`;
+};
+
+export const ReactIsInDevelomentMode = () => {
+  return "_self" in React.createElement("div");
 };
