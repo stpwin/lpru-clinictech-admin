@@ -2,6 +2,7 @@ import { handleResponse, handleFetchError } from "../../helpers";
 import { apiUrl } from "../../config";
 
 export const getSpecialist = (idToken) => {
+  // console.log("request id token:", idToken);
   const requestOptions = {
     method: "GET",
     headers: {

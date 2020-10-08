@@ -68,14 +68,14 @@ export class Specialist extends Component {
     });
   };
 
-  fetchSpecialist = () => {
+  fetchSpecialist = async () => {
     this.setState({
       specialist: [],
       fetching: true,
       createFail: "",
       removingDescriptionList: {}
     });
-    getSpecialist(this.context.token)
+    getSpecialist(await this.context.getToken())
       .then((res) => {
         this.setState({
           specialist: res,
@@ -156,7 +156,7 @@ export class Specialist extends Component {
         return;
       }
     }
-    createSpecialist(this.context.token, specialistTitle, imageUrl)
+    createSpecialist(await this.context.getToken(), specialistTitle, imageUrl)
       .then((res) => {
         // console.log(res);
         newSpecialist.thumbnail = imageUrl;
@@ -184,14 +184,14 @@ export class Specialist extends Component {
       });
   };
 
-  handleRemoveSpecialist = (index, id) => {
+  handleRemoveSpecialist = async (index, id) => {
     // console.log({ index, id });
     let { specialist, removingList, removingDescriptionList } = this.state;
     removingList[index] = true;
     this.setState({
       removingList
     });
-    removeSpecialist(this.context.token, id)
+    removeSpecialist(await this.context.getToken(), id)
       .then((res) => {
         delete specialist[index];
         delete removingList[index];
@@ -207,7 +207,7 @@ export class Specialist extends Component {
       });
   };
 
-  handleAddDescription = (index, id, inputRef) => {
+  handleAddDescription = async (index, id, inputRef) => {
     let { specialist, descriptionText, addingDescriptionList } = this.state;
     const descValue = descriptionText[index];
     if (!descValue) return;
@@ -215,7 +215,7 @@ export class Specialist extends Component {
     this.setState({
       addingDescriptionList
     });
-    addDescription(this.context.token, id, descValue)
+    addDescription(await this.context.getToken(), id, descValue)
       .then((res) => {
         let { addingDescriptionList } = this.state;
         delete addingDescriptionList[index];
@@ -258,7 +258,7 @@ export class Specialist extends Component {
     );
   };
 
-  handleRemoveDescription = (sindex, index, id) => {
+  handleRemoveDescription = async (sindex, index, id) => {
     // console.log({ sindex, index });
 
     const { removingDescriptionList } = this.state;
@@ -278,7 +278,7 @@ export class Specialist extends Component {
     this.setState({
       removingDescriptionList
     });
-    removeDescription(this.context.token, id)
+    removeDescription(await this.context.getToken(), id)
       .then((res) => {
         // console.log(res);
         let { specialist, removingDescriptionList } = this.state;
@@ -293,15 +293,19 @@ export class Specialist extends Component {
       .catch((err) => {});
   };
 
-  handleAddOwner = ({ id, name, image }) => {
+  handleAddOwner = async ({ id, name, image }) => {
     // console.log({ id, image, name });
     let { specialist, ownerAddSpecialistId, currentAddOwnerIndex } = this.state;
     if (!id) {
       // console.log("Create new");
-      return createOwner(this.context.token, { name, image })
-        .then((res) => {
+      return createOwner(await this.context.getToken(), { name, image })
+        .then(async (res) => {
           this.suggestionRef.current.Clear();
-          addOwner(this.context.token, ownerAddSpecialistId, res.owner_id)
+          addOwner(
+            await this.context.getToken(),
+            ownerAddSpecialistId,
+            res.owner_id
+          )
             .then((res) => {
               specialist[currentAddOwnerIndex].owner.push({
                 id: res.owner_id,
@@ -349,7 +353,7 @@ export class Specialist extends Component {
       });
   };
 
-  handleShowAddOwner = (currentAddOwnerIndex, specialistID) => {
+  handleShowAddOwner = async (currentAddOwnerIndex, specialistID) => {
     // console.log({ specialistID });
     this.setState({
       showAddOwner: true,
@@ -357,14 +361,17 @@ export class Specialist extends Component {
       currentAddOwnerIndex
     });
     this.suggestionRef.current.Clear();
-    this.suggestionRef.current.FetchOwners(this.context.token, specialistID);
+    this.suggestionRef.current.FetchOwners(
+      await this.context.getToken(),
+      specialistID
+    );
   };
 
-  handleRemoveOwner = (sindex, index, id) => {
+  handleRemoveOwner = async (sindex, index, id) => {
     // console.log({ sindex, index, id });
 
     let specialist = this.state.specialist;
-    removeOwnerSpecialist(this.context.token, id)
+    removeOwnerSpecialist(await this.context.getToken(), id)
       .then((res) => {
         delete specialist[sindex].owner[index];
         this.setState({
@@ -396,8 +403,8 @@ export class Specialist extends Component {
     );
   };
 
-  handleTitleChangeSave = (sid, title, callback) => {
-    changeTitle(this.context.token, sid, title)
+  handleTitleChangeSave = async (sid, title, callback) => {
+    changeTitle(await this.context.getToken(), sid, title)
       .then((res) => {
         callback(title);
       })
@@ -406,8 +413,8 @@ export class Specialist extends Component {
       });
   };
 
-  handleImageChangeSave = (index, sid, imageName) => {
-    changeImage(this.context.token, sid, imageName)
+  handleImageChangeSave = async (index, sid, imageName) => {
+    changeImage(await this.context.getToken(), sid, imageName)
       .then((res) => {
         let { specialist } = this.state;
         specialist[index].thumbnail = imageName;

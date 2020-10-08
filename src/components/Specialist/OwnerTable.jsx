@@ -28,8 +28,8 @@ export class OwnerTable extends Component {
     edits: []
   };
 
-  componentDidMount() {
-    getAllOwners(this.context.token)
+  async componentDidMount() {
+    getAllOwners(await this.context.getToken())
       .then((res) => {
         // console.log(res);
         const edits = res.map((item) => {
@@ -82,7 +82,7 @@ export class OwnerTable extends Component {
     });
   };
 
-  handleSave = (index) => {
+  handleSave = async (index) => {
     let { edits, owners, ownersChange } = this.state;
     edits[index].processing = true;
     edits[index].processFail = "";
@@ -93,7 +93,7 @@ export class OwnerTable extends Component {
     owners[index] = { ...ownersChange[index] };
 
     if (edits[index].add) {
-      return createOwner(this.context.token, owners[index])
+      return createOwner(await this.context.getToken(), owners[index])
         .then((res) => {
           edits[index].processing = false;
           edits[index].edit = false;
@@ -111,7 +111,7 @@ export class OwnerTable extends Component {
           });
         });
     }
-    updateOwner(this.context.token, owners[index])
+    updateOwner(await this.context.getToken(), owners[index])
       .then((res) => {
         edits[index].processing = false;
         edits[index].edit = false;
@@ -142,7 +142,7 @@ export class OwnerTable extends Component {
       edits
     });
   };
-  handleConfirmDelete = (index, id) => {
+  handleConfirmDelete = async (index, id) => {
     let { edits } = this.state;
     edits[index].processing = true;
     edits[index].processFail = "";
@@ -150,7 +150,7 @@ export class OwnerTable extends Component {
     this.setState({
       edits
     });
-    removeOwner(this.context.token, id)
+    removeOwner(await this.context.getToken(), id)
       .then((res) => {
         let { owners, edits } = this.state;
         edits[index].processing = false;
@@ -201,7 +201,7 @@ export class OwnerTable extends Component {
     });
   };
 
-  handleImageChange = (index, id, image) => {
+  handleImageChange = async (index, id, image) => {
     let { edits, owners } = this.state;
     if (edits[index].add) {
       owners[index].image = image;
@@ -210,7 +210,7 @@ export class OwnerTable extends Component {
       });
       return;
     }
-    updateOwnerImage(this.context.token, id, image)
+    updateOwnerImage(await this.context.getToken(), id, image)
       .then((res) => {
         let { owners } = this.state;
         owners[index].image = image;

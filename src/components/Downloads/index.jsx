@@ -88,8 +88,8 @@ export class Downloads extends Component {
 
   hiddenFileInput = createRef();
 
-  getDownloadList = () => {
-    return getDownloads(this.context.token)
+  getDownloadList = async () => {
+    return getDownloads(await this.context.getToken())
       .then((res) => {
         // console.log(res);
         return this.setState({
@@ -132,7 +132,7 @@ export class Downloads extends Component {
     });
   };
 
-  handleCreateDownloadSubmit = () => {
+  handleCreateDownloadSubmit = async () => {
     const { downloadTitle } = this.state;
     if (!downloadTitle) {
       return;
@@ -143,13 +143,9 @@ export class Downloads extends Component {
         createFail: "",
         fetchFail: ""
       },
-      () => {
-        createDownload(this.context.token, downloadTitle)
+      async () => {
+        createDownload(await this.context.getToken(), downloadTitle)
           .then((res) => {
-            // console.log(res);
-            const { downloads_id } = res;
-            // console.log("Create done id:", downloads_id);
-
             this.setState(
               {
                 creating: false,
@@ -169,8 +165,8 @@ export class Downloads extends Component {
     );
   };
 
-  handleDeleteDownload = (downloadsID) => {
-    deleteDownload(this.context.token, downloadsID)
+  handleDeleteDownload = async (downloadsID) => {
+    deleteDownload(await this.context.getToken(), downloadsID)
       .then((res) => {
         // console.log(res);
         this.getDownloadList();
@@ -186,9 +182,9 @@ export class Downloads extends Component {
     this.getDownloadList();
   };
 
-  handleFileDelete = (fileID) => {
+  handleFileDelete = async (fileID) => {
     // console.log(fileID)
-    deleteFile(this.context.token, fileID)
+    deleteFile(await this.context.getToken(), fileID)
       .then((res) => {
         // console.log(res)
         this.getDownloadList();
@@ -200,7 +196,7 @@ export class Downloads extends Component {
 
   handleShowFileBrowser = () => this.hiddenFileInput.current.click();
 
-  handleUploadCompleted = (index, url) => {
+  handleUploadCompleted = async (index, url) => {
     // console.log("Upload complete callback:", url);
     let { uploadList, uploadTo } = this.state;
     if (!uploadList) return;
@@ -218,7 +214,7 @@ export class Downloads extends Component {
       const files = uploadList.map((file) => {
         return [uploadTo[0], file.name, file.url];
       });
-      createFiles(this.context.token, files)
+      createFiles(await this.context.getToken(), files)
         .then((res) => {
           // console.log(res)
         })
@@ -269,7 +265,7 @@ export class Downloads extends Component {
         <header>
           <h1>ดาวน์โหลด</h1>
         </header>
-        <Table striped bordered hover size="sm">
+        <Table striped bordered hover size="sm" className="text-center">
           <thead>
             <tr>
               <th style={{ width: "3%" }}>#</th>

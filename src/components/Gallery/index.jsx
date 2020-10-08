@@ -37,8 +37,8 @@ export class Gallery extends Component {
     galleryChange: []
   };
 
-  componentDidMount() {
-    getGallery(this.context.token)
+  async componentDidMount() {
+    getGallery(await this.context.getToken())
       .then((res) => {
         // console.log(res);
         const edits = res.map((item) => {
@@ -103,7 +103,7 @@ export class Gallery extends Component {
     });
   };
 
-  handleSave = (index) => {
+  handleSave = async (index) => {
     let { gallery, galleryChange, edits } = this.state;
 
     edits[index].processing = true;
@@ -114,7 +114,7 @@ export class Gallery extends Component {
 
     if (edits[index].add) {
       //   Create new function here
-      create(this.context.token, galleryChange[index])
+      create(await this.context.getToken(), galleryChange[index])
         .then((res) => {
           edits[index].processing = false;
           edits[index].edit = false;
@@ -139,7 +139,7 @@ export class Gallery extends Component {
 
     //Update function here
     updateInfo(
-      this.context.token,
+      await this.context.getToken(),
       gallery[index].id,
       galleryChange[index].title,
       galleryChange[index].subtitle
@@ -186,7 +186,7 @@ export class Gallery extends Component {
     });
   };
 
-  handleToggleShowPublic = (index) => {
+  handleToggleShowPublic = async (index) => {
     const { gallery, edits } = this.state;
 
     if (edits[index].add) {
@@ -205,7 +205,7 @@ export class Gallery extends Component {
       edits
     });
     const newPublic = !gallery[index]._public;
-    setPublic(this.context.token, gallery[index].id, newPublic)
+    setPublic(await this.context.getToken(), gallery[index].id, newPublic)
       .then((res) => {
         gallery[index]._public = !gallery[index]._public;
         edits[index].processing = false;
@@ -266,7 +266,7 @@ export class Gallery extends Component {
     });
   };
 
-  handleConfirmRemove = (index) => {
+  handleConfirmRemove = async (index) => {
     const { edits, gallery, galleryChange } = this.state;
     edits[index].processing = true;
     edits[index].deleteError = "";
@@ -274,7 +274,7 @@ export class Gallery extends Component {
       edits
     });
 
-    remove(this.context.token, gallery[index].id)
+    remove(await this.context.getToken(), gallery[index].id)
       .then((res) => {
         gallery.splice(index, 1);
         edits.splice(index, 1);
@@ -293,7 +293,7 @@ export class Gallery extends Component {
       });
   };
 
-  handleImageChange = (index, image) => {
+  handleImageChange = async (index, image) => {
     const { edits, gallery, galleryChange } = this.state;
     if (edits[index].add) {
       gallery[index].thumdbImg = image;
@@ -303,7 +303,7 @@ export class Gallery extends Component {
       });
       return;
     }
-    updateImage(this.context.token, gallery[index].id, image)
+    updateImage(await this.context.getToken(), gallery[index].id, image)
       .then((res) => {
         const { gallery, galleryChange } = this.state;
         gallery[index].thumdbImg = image;

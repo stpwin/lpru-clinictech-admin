@@ -5,7 +5,6 @@ export const firebaseAuthContext = React.createContext();
 
 const AuthProvider = (props) => {
   const [error, setError] = useState("");
-  const [token, setToken] = useState(null);
   const [isLoggedIn, setLoggedIn] = useState(false);
   const [loading, setLoading] = useState(false);
   const [initial, setinitial] = useState(true);
@@ -18,40 +17,36 @@ const AuthProvider = (props) => {
 
   useEffect(() => {
     auth.onAuthStateChanged((userAuth) => {
-      setinitial(false);
-      // console.log("onAuthStateChanged", userAuth);
-      const token = userAuth && Object.entries(userAuth)[5][1].b;
-      setToken(token && token.g);
       if (userAuth) {
-        // console.log({ idtoken: token.g });
-        // userAuth.getIdToken().then((res) => {
-        //   console.log(res);
-        // });
         setLoggedIn(true);
       } else {
         setLoggedIn(false);
       }
+      setinitial(false);
     });
   }, []);
 
+  const getToken = async () => {
+    return await auth.currentUser.getIdToken();
+  };
+
   const Signin = async (email, password) => {
-    // console.log("handleSigninProvider");
     setLoading(true);
     setError("");
-    await authMethods.signin(email, password, setError, setToken);
+    await authMethods.signin(email, password, setError);
     setLoading(false);
   };
 
   const Signout = () => {
     setError("");
-    authMethods.signout(setError, setToken);
+    authMethods.signout(setError);
   };
 
   return (
     <firebaseAuthContext.Provider
       value={{
         Signin,
-        token,
+        getToken,
         isLoggedIn,
         error,
         loading,

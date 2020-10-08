@@ -1,6 +1,6 @@
 import { auth } from "./firebaseApp";
 const authMethods = {
-  signin: async (email, password, setError, setToken) => {
+  signin: async (email, password, setError) => {
     await auth
       .signInWithEmailAndPassword(email, password)
       .then(async (res) => {
@@ -14,17 +14,15 @@ const authMethods = {
         // console.warn(err.message);
       });
   },
-  signout: (setError, setToken) => {
+  signout: (setError) => {
     auth
       .signOut()
       .then((res) => {
-        localStorage.removeItem("token");
-        setToken(null);
+        // localStorage.removeItem("token");
       })
       .catch((err) => {
         setError(err.message);
-        localStorage.removeItem("token");
-        setToken(null);
+        // localStorage.removeItem("token");
         console.error(err.message);
       });
   }

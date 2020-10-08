@@ -1,7 +1,8 @@
 import React from "react";
-import { Table, Button, Image } from "react-bootstrap";
+import { Table, Button } from "react-bootstrap";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import { getOwnerImage } from "../../helpers";
+import MyImage from "../MyImage";
 
 export const Owners = ({ sindex, data, onTrash, onAdd }) => {
   return (
@@ -24,14 +25,11 @@ export const Owners = ({ sindex, data, onTrash, onAdd }) => {
             return (
               <tr key={`owner-${i}`}>
                 <td>
-                  {owner.image ? (
-                    <Image width="60" src={getOwnerImage(owner.image)} />
-                  ) : (
-                    <Image
-                      width="60"
-                      src="https://via.placeholder.com/60?text=No image"
-                    />
-                  )}
+                  <MyImage
+                    width="60"
+                    height="60"
+                    src={owner.image && getOwnerImage(owner.image)}
+                  />
                 </td>
                 <td>{`${owner.name}`}</td>
                 <td>

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Button, Image } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { FaEdit } from "react-icons/fa";
 import { ImageUploadModal } from "../Upload";
+import MyImage from "../MyImage";
 
 export const ImageEdit = ({
   thumbnailUrl,
@@ -10,7 +11,7 @@ export const ImageEdit = ({
   cropAspect,
   showFileBrowserOnClick,
   width,
-  height,
+  height
 }) => {
   const [imageUrl, setImageUrl] = useState("");
   const [showUpload, setShowUpload] = useState(false);
@@ -22,7 +23,7 @@ export const ImageEdit = ({
   return (
     <>
       <div className="hover-change">
-        <Image width={width || 120} height={height || 90} src={imageUrl} />
+        <MyImage width={width} height={height} src={imageUrl} />
         <div className="middle">
           <Button
             size="sm"

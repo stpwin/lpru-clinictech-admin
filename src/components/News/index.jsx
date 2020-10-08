@@ -38,8 +38,8 @@ export class News extends Component {
     newsChange: []
   };
 
-  componentDidMount() {
-    getNews(this.context.token)
+  async componentDidMount() {
+    getNews(await this.context.getToken())
       .then((res) => {
         // console.log(res);
         const edits = res.map((item) => {
@@ -106,7 +106,7 @@ export class News extends Component {
     });
   };
 
-  handleSave = (index) => {
+  handleSave = async (index) => {
     let { news, newsChange, edits } = this.state;
 
     edits[index].processing = true;
@@ -117,7 +117,7 @@ export class News extends Component {
 
     if (edits[index].add) {
       //Create new function here
-      create(this.context.token, newsChange[index])
+      create(await this.context.getToken(), newsChange[index])
         .then((res) => {
           edits[index].processing = false;
           edits[index].edit = false;
@@ -141,7 +141,7 @@ export class News extends Component {
 
     //Update function here
     updateInfo(
-      this.context.token,
+      await this.context.getToken(),
       news[index].id,
       newsChange[index].title,
       newsChange[index].subtitle
@@ -188,7 +188,7 @@ export class News extends Component {
     });
   };
 
-  handleToggleShowPublic = (index) => {
+  handleToggleShowPublic = async (index) => {
     const { news, edits } = this.state;
 
     if (edits[index].add) {
@@ -207,7 +207,7 @@ export class News extends Component {
       edits
     });
     const newPublic = !news[index]._public;
-    setPublic(this.context.token, news[index].id, newPublic)
+    setPublic(await this.context.getToken(), news[index].id, newPublic)
       .then((res) => {
         news[index]._public = !news[index]._public;
         edits[index].processing = false;
@@ -268,7 +268,7 @@ export class News extends Component {
     });
   };
 
-  handleConfirmRemove = (index) => {
+  handleConfirmRemove = async (index) => {
     const { edits, news, newsChange } = this.state;
     edits[index].processing = true;
     edits[index].deleteError = "";
@@ -276,7 +276,7 @@ export class News extends Component {
       edits
     });
 
-    remove(this.context.token, news[index].id)
+    remove(await this.context.getToken(), news[index].id)
       .then((res) => {
         news.splice(index, 1);
         edits.splice(index, 1);
@@ -295,7 +295,7 @@ export class News extends Component {
       });
   };
 
-  handleImageChange = (index, image) => {
+  handleImageChange = async (index, image) => {
     const { edits, news, newsChange } = this.state;
     if (edits[index].add) {
       news[index].thumdbImg = image;
@@ -305,7 +305,7 @@ export class News extends Component {
       });
       return;
     }
-    updateImage(this.context.token, news[index].id, image)
+    updateImage(await this.context.getToken(), news[index].id, image)
       .then((res) => {
         const { news, newsChange } = this.state;
         news[index].thumdbImg = image;
