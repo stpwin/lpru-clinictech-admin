@@ -16,7 +16,7 @@ import {
   removeOwner,
   updateOwnerImage
 } from "./specialistHelpers";
-import { getOwnerImage } from "../../helpers";
+import { getOwnerImage } from "../../storageHelpers";
 import { ImageEdit } from "../ImageEdit";
 
 export class OwnerTable extends Component {

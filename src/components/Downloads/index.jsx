@@ -1,5 +1,4 @@
 import React, { Component, createRef } from "react";
-import { storage } from "../../firebaseApp";
 import { Button, Modal, Form, Spinner, Table, Badge } from "react-bootstrap";
 import {
   getDownloads,
@@ -11,66 +10,7 @@ import {
 import { FaTrash, FaPlus, FaCheck } from "react-icons/fa";
 import { firebaseAuthContext } from "../../providers/AuthProvider";
 
-const uploadAsPromise = (
-  fileObj,
-  callback,
-  index,
-  downloadsID,
-  downloadsTitle
-) => {
-  return new Promise((resolve, reject) => {
-    const metadata = {
-      customMetadata: {
-        downloadsID,
-        downloadsTitle
-      }
-    };
-    const newName = fileObj.name; //`${uuid()}`; //.${fileObj.name.split('.').pop()}
-    const storageRef = storage.ref(`public_files/${newName}`);
-    const task = storageRef.put(fileObj, metadata);
-
-    return task.on(
-      "state_changed",
-      function (snapshot) {
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log(`Uploading ${newName}: ${progress.toFixed(2)}% done`);
-        // switch (snapshot.state) {
-        //   case "paused":
-        //     // console.log("Upload is paused");
-        //     break;
-        //   case "running":
-        //     // console.log("Upload is running");
-        //     break;
-        // }
-      },
-      function (err) {
-        console.log("Upload fail!");
-        // switch (err.code) {
-        //   case "storage/unauthorized":
-        //     // User doesn't have permission to access the object
-        //     break;
-
-        //   case "storage/canceled":
-        //     // User canceled the upload
-        //     break;
-
-        //   case "storage/unknown":
-        //     // Unknown error occurred, inspect error.serverResponse
-        //     break;
-        // }
-      },
-      function () {
-        // Upload completed successfully, now we can get the download URL
-        task.snapshot.ref.getDownloadURL().then(function (downloadURL) {
-          callback(index, downloadURL);
-          // console.log("File available at", downloadURL);
-          return Promise.resolve(true);
-        });
-      }
-    );
-  });
-};
+import { uploadAsPromise } from "../../fileUpload";
 
 export class Downloads extends Component {
   state = {
@@ -83,7 +23,8 @@ export class Downloads extends Component {
     fetchFail: "",
     uploadShow: false,
     uploadTo: ["", ""],
-    uploadList: []
+    uploadList: [],
+    uploading: false
   };
 
   hiddenFileInput = createRef();
@@ -210,6 +151,9 @@ export class Downloads extends Component {
     const allDone = uploadList.every((current) => current.uploading === false);
     // console.log({ allDone });
     if (allDone) {
+      this.setState({
+        uploading: false
+      });
       // console.log("Add to database")
       const files = uploadList.map((file) => {
         return [uploadTo[0], file.name, file.url];
@@ -243,6 +187,7 @@ export class Downloads extends Component {
       );
     });
     this.setState({
+      uploading: true,
       uploadList
     });
   };
@@ -258,7 +203,8 @@ export class Downloads extends Component {
       fetchFail,
       uploadShow,
       uploadTo,
-      uploadList
+      uploadList,
+      uploading
     } = this.state;
     return (
       <>
@@ -447,8 +393,19 @@ export class Downloads extends Component {
             </Table>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={this.handleCloseUpload}>
-              เสร็จสิ้น
+            <Button
+              disabled={uploading}
+              variant="primary"
+              onClick={this.handleCloseUpload}
+            >
+              {uploading ? (
+                <>
+                  <Spinner animation="border" size="sm" className="mr-1" />
+                  กำลังอัพโหลด
+                </>
+              ) : (
+                <>เสร็จสิ้น</>
+              )}
             </Button>
           </Modal.Footer>
         </Modal>

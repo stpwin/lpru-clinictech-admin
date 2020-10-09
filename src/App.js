@@ -16,6 +16,7 @@ import Login from "./components/Login";
 import Notfound from "./components/Notfound";
 
 import { firebaseAuthContext } from "./providers/AuthProvider";
+import { GalleryUpload } from "./components/Gallery/GalleryUpload";
 
 function App() {
   const { isLoggedIn, initial } = useContext(firebaseAuthContext);
@@ -74,6 +75,13 @@ function App() {
             exact
             path="/gallery"
             component={Gallery}
+          />
+          <PrivateRoute
+            isLoggedIn={isLoggedIn}
+            setLastPage={handlePageClick}
+            exact
+            path="/gallery/upload"
+            component={GalleryUpload}
           />
           <PrivateRoute
             isLoggedIn={isLoggedIn}

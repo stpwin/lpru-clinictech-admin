@@ -26,7 +26,7 @@ import {
   remove
 } from "./galleryHelpers";
 import { ImageEdit } from "../ImageEdit";
-import { getGalleryImage } from "../../helpers";
+import { getGalleryImage } from "../../storageHelpers";
 import { firebaseAuthContext } from "../../providers/AuthProvider";
 export class Gallery extends Component {
   state = {

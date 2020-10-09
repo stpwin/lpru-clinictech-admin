@@ -136,12 +136,54 @@ table table {
   text-align: center;
 }
 
+.hover-change .uploaded {
+  position: absolute;
+  top: 1%;
+  right: 5%;
+  color: #4caf50;
+}
+
 .hover-change:hover img {
+  opacity: 0.3;
+}
+
+.uploading img {
+  opacity: 0.3;
+}
+
+.trashed img {
   opacity: 0.3;
 }
 
 .hover-change:hover .middle {
   opacity: 1;
+}
+
+.middle-progress {
+  transition: 0.5s ease;
+  position: relative;
+  left: 50%;
+  top: -46%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  text-align: center;
+  width: 80%;
+}
+.trashed {
+  position: relative;
+}
+
+.trashed .middle {
+  /* transition: 0.5s ease; */
+  opacity: 1;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  text-align: center;
+  color: #353535;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  /* margin-bottom: -50%; */
 }
 
 .text {
@@ -184,4 +226,11 @@ table table {
 .bs-tooltip-auto[x-placement^="right"] .arrow::before,
 .tooltip-danger.bs-tooltip-right .arrow::before {
   border-right-color: #dc3545 !important;
+}
+
+.d-flex > .hover-change,
+.uploading,
+.trashed > img {
+  text-align: center;
+  margin: 5px;
 }

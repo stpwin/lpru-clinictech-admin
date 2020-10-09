@@ -1,7 +1,7 @@
 import React from "react";
 import { Table, Button } from "react-bootstrap";
 import { FaPlus, FaTrash } from "react-icons/fa";
-import { getOwnerImage } from "../../helpers";
+import { getOwnerImage } from "../../storageHelpers";
 import MyImage from "../MyImage";
 
 export const Owners = ({ sindex, data, onTrash, onAdd }) => {

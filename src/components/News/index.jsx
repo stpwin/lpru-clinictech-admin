@@ -26,7 +26,7 @@ import {
   updateImage
 } from "./newsHelpers";
 import { ImageEdit } from "../ImageEdit";
-import { getNewsImage } from "../../helpers";
+import { getNewsImage } from "../../storageHelpers";
 import NewsEditor from "./NewsEditor";
 import { firebaseAuthContext } from "../../providers/AuthProvider";
 export class News extends Component {

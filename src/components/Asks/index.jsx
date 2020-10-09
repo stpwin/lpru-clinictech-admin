@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { firebaseAuthContext } from "../../providers/AuthProvider";
 
-import { Table, Button, Spinner } from "react-bootstrap";
-import { FaPlus } from "react-icons/fa";
+import { Table, Spinner } from "react-bootstrap";
+// import { FaPlus } from "react-icons/fa";
 import Moment from "react-moment";
 
 import { GoogleSpreadsheet } from "google-spreadsheet";

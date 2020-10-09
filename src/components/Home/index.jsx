@@ -1,7 +1,7 @@
 import React, { Component, useState, useEffect } from "react";
 import { Form, InputGroup, Col, Button, Spinner } from "react-bootstrap";
 // import { ImageEdit } from "../ImageEdit";
-import { getWebContact, saveWebContact } from "./homeHelpers";
+import { createWebContact, getWebContact, saveWebContact } from "./homeHelpers";
 import _ from "lodash";
 
 export class Home extends Component {
@@ -42,7 +42,7 @@ export class Home extends Component {
 //   );
 // };
 
-const Contact = ({ infoData }) => {
+const Contact = () => {
   const [data, setData] = useState({});
   const [dataNew, setDataNew] = useState({});
   const [dataChanged, setDataChanged] = useState([]);
@@ -50,21 +50,40 @@ const Contact = ({ infoData }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
+  const [initialize, setInitilize] = useState(false);
 
-  const fetData = () => {
+  const fethData = () => {
     getWebContact()
-      .then((res) => {
-        // console.log(res);
+      .then(async (res) => {
+        if (!res) {
+          if (!initialize) {
+            setInitilize(false);
+            return createWebContact()
+              .then(() => {
+                setLoading(false);
+                setInitilize(true);
+                fethData();
+                return;
+              })
+              .catch((err) => {
+                setError("ไม่สามารถติดต่อฐานข้อมูล");
+              });
+          }
+          return;
+        }
+        setLoading(false);
         setData(res);
         setDataNew(JSON.parse(JSON.stringify(res)));
         setDataChanged(_.mapValues(res, () => false));
-        setLoading(false);
       })
-      .catch((err) => {});
+      .catch((err) => {
+        setError("ไม่สามารถติดต่อฐานข้อมูล");
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
-    fetData();
+    fethData();
   }, []);
 
   useEffect(() => {
@@ -107,8 +126,8 @@ const Contact = ({ infoData }) => {
             <Form.Label>โทรศัพท์</Form.Label>
             <Form.Control
               maxLength={15}
-              disabled={loading}
-              value={dataNew.tel || ""}
+              disabled={loading || error}
+              value={dataNew?.tel || ""}
               onChange={(e) => handleContactChange("tel", e.target.value)}
               type="text"
               placeholder=""
@@ -118,8 +137,8 @@ const Contact = ({ infoData }) => {
             <Form.Label>แฟกซ์</Form.Label>
             <Form.Control
               maxLength={15}
-              disabled={loading}
-              value={dataNew.fax || ""}
+              disabled={loading || error}
+              value={dataNew?.fax || ""}
               onChange={(e) => handleContactChange("fax", e.target.value)}
               type="text"
               placeholder=""
@@ -131,8 +150,8 @@ const Contact = ({ infoData }) => {
           <Form.Label>อีเมล</Form.Label>
           <Form.Control
             maxLength={100}
-            disabled={loading}
-            value={dataNew.email || ""}
+            disabled={loading || error}
+            value={dataNew?.email || ""}
             onChange={(e) => handleContactChange("email", e.target.value)}
             type="email"
             placeholder=""
@@ -149,8 +168,8 @@ const Contact = ({ infoData }) => {
             </InputGroup.Prepend>
             <Form.Control
               maxLength={100}
-              disabled={loading}
-              value={dataNew.facebookName || ""}
+              disabled={loading || error}
+              value={dataNew?.facebookName || ""}
               onChange={(e) =>
                 handleContactChange("facebookName", e.target.value)
               }
@@ -166,8 +185,8 @@ const Contact = ({ infoData }) => {
             </InputGroup.Prepend>
             <Form.Control
               maxLength={800}
-              disabled={loading}
-              value={dataNew.facebook || ""}
+              disabled={loading || error}
+              value={dataNew?.facebook || ""}
               onChange={(e) => handleContactChange("facebook", e.target.value)}
               aria-label="Default"
               aria-describedby="inputGroup-sizing-default"
@@ -184,8 +203,8 @@ const Contact = ({ infoData }) => {
             </InputGroup.Prepend>
             <Form.Control
               maxLength={100}
-              disabled={loading}
-              value={dataNew.placeName || ""}
+              disabled={loading || error}
+              value={dataNew?.placeName || ""}
               onChange={(e) => handleContactChange("placeName", e.target.value)}
               aria-label="Default"
               aria-describedby="inputGroup-sizing-default"
@@ -199,8 +218,8 @@ const Contact = ({ infoData }) => {
             </InputGroup.Prepend>
             <Form.Control
               maxLength={800}
-              disabled={loading}
-              value={dataNew.place || ""}
+              disabled={loading || error}
+              value={dataNew?.place || ""}
               onChange={(e) => handleContactChange("place", e.target.value)}
               aria-label="Default"
               aria-describedby="inputGroup-sizing-default"
@@ -212,14 +231,14 @@ const Contact = ({ infoData }) => {
           <Form.Control
             maxLength={1000}
             as="textarea"
-            disabled={loading}
-            value={dataNew.footerText || ""}
+            disabled={loading || error}
+            value={dataNew?.footerText || ""}
             onChange={(e) => handleContactChange("footerText", e.target.value)}
             rows={3}
           />
         </Form.Group>
         <Button
-          disabled={!canSave || loading}
+          disabled={!canSave || loading || error}
           onClick={handleSave}
           variant={`${saved ? "success" : "primary"}`}
         >

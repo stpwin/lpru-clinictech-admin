@@ -47,7 +47,7 @@ export class Navbar extends Component {
                   <Link to="/news">ข่าวสาร</Link>
                 </MenuItem>
                 <MenuItem icon={<FaPhotoVideo />}>
-                  <Link to="/gallery">รูปภาพ</Link>
+                  <Link to="/gallery">แกลเลอรี</Link>
                 </MenuItem>
                 <MenuItem icon={<FaDownload />}>
                   <Link to="/downloads">ดาวน์โหลด</Link>

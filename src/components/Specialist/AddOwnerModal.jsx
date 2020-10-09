@@ -5,7 +5,7 @@ import AutosuggestHighlightParse from "autosuggest-highlight/parse";
 import Autosuggest from "react-autosuggest";
 import "./autosuggest-style.css";
 import { getOwnersExcept } from "./specialistHelpers";
-import { getOwnerImage } from "../../helpers";
+import { getOwnerImage } from "../../storageHelpers";
 // import {firebaseAuthContext} from "../../providers/AuthProvider"
 
 function escapeRegexCharacters(str) {

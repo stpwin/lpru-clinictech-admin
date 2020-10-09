@@ -16,7 +16,7 @@ import {
   removeOwnerSpecialist
 } from "./specialistHelpers";
 
-import { getSpecialistImage } from "../../helpers";
+import { getSpecialistImage } from "../../storageHelpers";
 import getCroppedImg from "../../cropImage";
 import { uploadImage } from "../../fileUpload";
 

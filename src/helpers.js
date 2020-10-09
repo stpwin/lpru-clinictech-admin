@@ -1,5 +1,4 @@
 import React from "react";
-
 export const handleResponse = async (response) => {
   if (response.status === 204) {
     return null;
@@ -48,19 +47,6 @@ export const handleFetchError = (e) => {
   console.error("Fetch fail:", e);
   // Promise.reject(e);
   throw e;
-};
-
-export const getSpecialistImage = (image) => {
-  return `https://firebasestorage.googleapis.com/v0/b/lpru-clinictech.appspot.com/o/specialist_images%2F${image}?alt=media`;
-};
-export const getOwnerImage = (image) => {
-  return `https://firebasestorage.googleapis.com/v0/b/lpru-clinictech.appspot.com/o/owner_images%2F${image}?alt=media`;
-};
-export const getNewsImage = (image) => {
-  return `https://firebasestorage.googleapis.com/v0/b/lpru-clinictech.appspot.com/o/news_images%2F${image}?alt=media`;
-};
-export const getGalleryImage = (image) => {
-  return `https://firebasestorage.googleapis.com/v0/b/lpru-clinictech.appspot.com/o/gallery_images%2F${image}?alt=media`;
 };
 
 export const ReactIsInDevelomentMode = () => {
