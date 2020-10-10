@@ -16,8 +16,14 @@ export const getNewsImage = (image) => {
     firebaseConfig.storageBucket
   }/o/${encodeURIComponent(storagePath)}news_images%2F${image}?alt=media`;
 };
-export const getGalleryImage = (image) => {
+export const getGalleryThumdbImage = (image) => {
   return `https://firebasestorage.googleapis.com/v0/b/${
     firebaseConfig.storageBucket
   }/o/${encodeURIComponent(storagePath)}gallery_images%2F${image}?alt=media`;
+};
+
+export const getGalleryImage = (id, image) => {
+  return `https://firebasestorage.googleapis.com/v0/b/${
+    firebaseConfig.storageBucket
+  }/o/${encodeURIComponent(storagePath)}gallery%2F${id}%2F${image}?alt=media`;
 };

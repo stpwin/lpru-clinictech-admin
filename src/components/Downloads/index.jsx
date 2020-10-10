@@ -137,7 +137,7 @@ export class Downloads extends Component {
 
   handleShowFileBrowser = () => this.hiddenFileInput.current.click();
 
-  handleUploadCompleted = async (index, url) => {
+  handleUploadCompleted = async (index, url, name) => {
     // console.log("Upload complete callback:", url);
     let { uploadList, uploadTo } = this.state;
     if (!uploadList) return;
@@ -171,6 +171,10 @@ export class Downloads extends Component {
   handleFileSelected = (e) => {
     // console.log(e.target.files);
     let { uploadList, uploadTo } = this.state;
+    const metadata = {
+      id: uploadTo[0],
+      title: uploadTo[1]
+    };
     Array.from(e.target.files).forEach((f) => {
       const index =
         uploadList.push({
@@ -180,10 +184,11 @@ export class Downloads extends Component {
         }) - 1;
       uploadList[index].task = uploadAsPromise(
         f,
+        f.name,
         this.handleUploadCompleted,
         index,
-        uploadTo[0],
-        uploadTo[1]
+        metadata,
+        "public_files/"
       );
     });
     this.setState({

@@ -4,28 +4,19 @@ import { storagePath } from "./config";
 
 export const uploadAsPromise = (
   fileObj,
+  fileName,
   callback,
   index,
-  downloadsID = "",
-  downloadsTitle = "",
-  path = "public_files/"
+  metadata,
+  path
 ) => {
   return new Promise((resolve, reject) => {
-    const metadata = {
-      customMetadata: {
-        downloadsID,
-        downloadsTitle
-      }
+    const _metadata = {
+      customMetadata: metadata
     };
-    const newName = fileObj.name;
+    const newName = fileName || uuid();
     const storageRef = storage.ref(`${storagePath}${path}${newName}`);
-    let task;
-    if (downloadsID || downloadsTitle) {
-      task = storageRef.put(fileObj, metadata);
-    } else {
-      task = storageRef.put(fileObj);
-    }
-
+    const task = storageRef.put(fileObj, _metadata);
     return task.on(
       "state_changed",
       function (snapshot) {
@@ -61,7 +52,7 @@ export const uploadAsPromise = (
       () => {
         // Upload completed successfully, now we can get the download URL
         task.snapshot.ref.getDownloadURL().then((downloadURL) => {
-          callback(index, downloadURL);
+          callback(index, downloadURL, newName);
           // console.log("File available at", downloadURL);
           return resolve(true);
         });

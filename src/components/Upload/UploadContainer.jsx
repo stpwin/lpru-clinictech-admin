@@ -3,7 +3,7 @@ import React, {
   forwardRef,
   useImperativeHandle,
   useState,
-  useEffect,
+  useEffect
 } from "react";
 import Resizer from "react-image-file-resizer";
 import Cropper from "react-easy-crop";
@@ -17,7 +17,7 @@ export const UploadContainer = forwardRef((props, ref) => {
   const [cropper, setCropper] = useState({
     crop: { x: 0, y: 0 },
     zoom: 1,
-    aspect: props.cropAspect,
+    aspect: props.cropAspect
   });
   const [croppedAreaPixels, setCroppedAreaPixels] = useState({});
   const fileUpload = useRef(null);
@@ -36,7 +36,7 @@ export const UploadContainer = forwardRef((props, ref) => {
       if (!file) return;
       const cropped = await getCroppedImg(imageUrl, croppedAreaPixels);
       return await uploadImage(cropped, path);
-    },
+    }
   }));
 
   const showFileBrowser = () => {
@@ -60,8 +60,8 @@ export const UploadContainer = forwardRef((props, ref) => {
         setImageUrl(uri);
       },
       "base64",
-      200,
-      200
+      300,
+      300
     );
   };
 

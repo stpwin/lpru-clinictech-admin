@@ -1,20 +1,59 @@
-import React, { useState, createRef, useEffect, useCallback } from "react";
+import React, { useState, createRef, useEffect } from "react";
+import { useLocation, useHistory } from "react-router-dom";
 import { Button, Container, Row, Col, Spinner } from "react-bootstrap";
 import { PreviewImage } from "./PreviewImage";
 import Resizer from "react-image-file-resizer";
-// import { uploadAsPromise } from "../../fileUpload";
+import { uploadAsPromise } from "../../fileUpload";
 import UploadingPlaceholder from "./Uploading-200.png";
+import { storage } from "../../firebaseApp";
+import { storagePath } from "../../config";
+import { getGalleryImage } from "../../storageHelpers";
 
-export const GalleryUpload = ({ galleryID, galleryTitle }) => {
-  const [images, setImages] = useState([]);
+export const GalleryUpload = () => {
+  const location = useLocation();
+  const history = useHistory();
+  const storageRef = storage.ref(`${storagePath}gallery`);
+
+  const [identify, setIdentify] = useState({ id: null, title: "" });
+  const [images, setImages] = useState([{}]);
   const [wait, setWait] = useState(false);
   const [m, setM] = useState(0);
 
   const hiddenFileInput = createRef();
 
-  const uploadAsPromise = (f, callback, index, x, x1, path) => {
-    setTimeout(() => callback(index, ""), 1000);
-  };
+  useEffect(() => {
+    // console.log(location.state);
+    const _identify = location?.state?.identify;
+    if (!_identify) {
+      history.push("/gallery");
+      return;
+    }
+    setIdentify(_identify);
+
+    // console.log(`${storagePath}gallery/${_identify.id}`);
+
+    storageRef
+      .child(`${_identify.id}`)
+      .listAll()
+      .then((res) => {
+        const _images = res.items.map((item) => {
+          return {
+            url: "",
+            new: false,
+            uploading: false,
+            uploaded: true,
+            deleting: false,
+            uploadUrl: getGalleryImage(_identify.id, item.name),
+            name: item.name
+          };
+        });
+        // console.log(_images);
+        setImages(_images);
+      })
+      .catch((err) => {
+        console.warn(err);
+      });
+  }, []);
 
   const handleShowFileBrowser = () => hiddenFileInput.current.click();
 
@@ -30,7 +69,9 @@ export const GalleryUpload = ({ galleryID, galleryTitle }) => {
         new: true,
         uploading: true,
         deleting: false,
-        uploaded: false
+        uploaded: false,
+        uploadUrl: "",
+        name: ""
       });
     }
 
@@ -52,9 +93,10 @@ export const GalleryUpload = ({ galleryID, galleryTitle }) => {
             new: true,
             uploading: false,
             deleting: false,
-            uploaded: false
+            uploaded: false,
+            name: f.name.split(".").slice(0, -1).join(".")
           };
-          console.log("done index:", lastLength + i);
+          console.log("Resize done :", f.name);
           setImages(previewImages);
 
           processedCount++;
@@ -71,15 +113,13 @@ export const GalleryUpload = ({ galleryID, galleryTitle }) => {
     });
   };
 
-  useEffect(() => {
-    console.log("Update on images changed");
-  }, [images]);
-
-  const handleUploadCompleted = async (index, url) => {
+  const handleUploadCompleted = async (index, url, name) => {
     let newImages = [...images];
     newImages[index].uploading = false;
     newImages[index].new = false;
     newImages[index].uploaded = true;
+    newImages[index].uploadUrl = url;
+    newImages[index].name = name;
     setImages(newImages);
 
     const allDone = images.every((current) => current.uploading === false);
@@ -98,12 +138,12 @@ export const GalleryUpload = ({ galleryID, galleryTitle }) => {
         uploadCount += 1;
         newImages[i].uploading = true;
         uploadAsPromise(
-          image,
+          image.url,
+          image.name,
           handleUploadCompleted,
           i,
-          "",
-          "",
-          "gallery_images/"
+          identify,
+          `gallery/${identify.id}/`
         );
       }
     });
@@ -111,23 +151,59 @@ export const GalleryUpload = ({ galleryID, galleryTitle }) => {
     setImages(newImages);
   };
 
-  const handleTrash = (index) => {
+  const setDeleting = (index) => {
     const newImages = [...images];
-    if (newImages[index].new) {
-      newImages.splice(index, 1);
-      newImages.splice(index, 1);
-
-      setImages(newImages);
-    } else {
-      newImages[index].deleting = true;
-      setImages(newImages);
-    }
+    newImages[index].deleting = true;
+    setImages(newImages);
   };
 
+  const setDeleteFail = (index, err) => {
+    const newImages = [...images];
+    newImages[index].deleting = false;
+    setImages(newImages);
+  };
+
+  const doDelete = (index) => {
+    const newImages = [...images];
+    newImages.splice(index, 1);
+    setImages(newImages);
+  };
+
+  const handleTrash = (index) => {
+    const newImages = [...images];
+    if (images[index].new) {
+      doDelete(index);
+    } else {
+      setDeleting(index);
+
+      storageRef
+        .child(`${identify.id}/${newImages[index].name}`)
+        .delete()
+        .then(() => {
+          doDelete(index);
+        })
+        .catch((err) => {
+          console.warn(err);
+          setDeleteFail(index, err);
+        });
+    }
+  };
+  const uploadedCount = images.reduce(
+    (sum, cur) => sum + (cur.uploaded ? 1 : 0),
+    0
+  );
   return (
     <>
       <header>
-        <h3 className="mt-5">{galleryTitle}</h3>
+        <h1>แกลเลอรี: {identify.title}</h1>
+        <p>
+          <span>ทั้งหมด {images.length} ภาพ</span>
+          {" | "}
+          <span>{uploadedCount} อัพโหลดแล้ว</span>
+          {" | "}
+          <span>{images.length - uploadedCount} ยังไม่ได้อัพโหลด</span>
+        </p>
+        {/* <h3 className="mt-5"></h3> */}
       </header>
 
       <Container fluid>
@@ -172,6 +248,7 @@ export const GalleryUpload = ({ galleryID, galleryTitle }) => {
               uploaded={image.uploaded}
               src={
                 (image.url && URL.createObjectURL(image.url)) ||
+                image.uploadUrl ||
                 UploadingPlaceholder
               }
               onTrash={() => handleTrash(i)}

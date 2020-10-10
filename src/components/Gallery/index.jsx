@@ -26,7 +26,7 @@ import {
   remove
 } from "./galleryHelpers";
 import { ImageEdit } from "../ImageEdit";
-import { getGalleryImage } from "../../storageHelpers";
+import { getGalleryThumdbImage } from "../../storageHelpers";
 import { firebaseAuthContext } from "../../providers/AuthProvider";
 export class Gallery extends Component {
   state = {
@@ -209,7 +209,7 @@ export class Gallery extends Component {
       .then((res) => {
         gallery[index]._public = !gallery[index]._public;
         edits[index].processing = false;
-        console.log(res);
+        // console.log(res);
         this.setState({
           gallery,
           edits
@@ -316,7 +316,13 @@ export class Gallery extends Component {
       .catch((err) => {});
   };
 
-  handleEditContent = (index) => {};
+  handleEditContent = (index, id, title) => {
+    // console.log(this.props);
+    const identify = { id, title };
+    this.props.history.push(`gallery/upload/`, {
+      identify
+    });
+  };
 
   render() {
     const { gallery, galleryChange, edits, fetching, fetchFail } = this.state;
@@ -383,7 +389,7 @@ export class Gallery extends Component {
                         thumbnailUrl={
                           (item &&
                             item.thumdbImg &&
-                            getGalleryImage(item.thumdbImg)) ||
+                            getGalleryThumdbImage(item.thumdbImg)) ||
                           "https://via.placeholder.com/120x120?text=No image"
                         }
                       />
@@ -461,9 +467,11 @@ export class Gallery extends Component {
                                 <FaEdit />
                               </Button>
                               <Button
-                                variant="outline-dark"
+                                variant="outline-success"
                                 className="xs mr-1"
-                                onClick={() => this.handleEditContent(i)}
+                                onClick={() =>
+                                  this.handleEditContent(i, item.id, item.title)
+                                }
                               >
                                 <FaPenSquare />
                               </Button>
