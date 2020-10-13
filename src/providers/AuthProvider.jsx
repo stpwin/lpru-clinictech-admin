@@ -9,11 +9,11 @@ const AuthProvider = (props) => {
   const [loading, setLoading] = useState(false);
   const [initial, setinitial] = useState(true);
 
-  useEffect(() => {
-    if (error) {
-      console.log({ error });
-    }
-  }, [error]);
+  // useEffect(() => {
+  //   if (error) {
+  //     console.log({ error });
+  //   }
+  // }, [error]);
 
   useEffect(() => {
     auth.onAuthStateChanged((userAuth) => {

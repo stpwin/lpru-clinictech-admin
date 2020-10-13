@@ -27,7 +27,6 @@ import {
 } from "./newsHelpers";
 import { ImageEdit } from "../ImageEdit";
 import { getNewsImage } from "../../storageHelpers";
-import NewsEditor from "./NewsEditor";
 import { firebaseAuthContext } from "../../providers/AuthProvider";
 export class News extends Component {
   state = {
@@ -38,33 +37,36 @@ export class News extends Component {
     newsChange: []
   };
 
-  async componentDidMount() {
-    getNews(await this.context.getToken())
-      .then((res) => {
-        // console.log(res);
-        const edits = res.map((item) => {
-          return {
-            edit: false,
-            delete: false,
-            add: false,
-            _public: false,
-            processing: false,
-            publicError: "",
-            editError: "",
-            addError: "",
-            deleteError: ""
-          };
+  componentDidMount() {
+    // console.log("WTF");
+    this.context.getToken().then((token) => {
+      getNews(token)
+        .then((res) => {
+          // console.log(res);
+          const edits = res.map((item) => {
+            return {
+              edit: false,
+              delete: false,
+              add: false,
+              _public: false,
+              processing: false,
+              publicError: "",
+              editError: "",
+              addError: "",
+              deleteError: ""
+            };
+          });
+          this.setState({
+            fetching: false,
+            news: res,
+            newsChange: JSON.parse(JSON.stringify(res)),
+            edits
+          });
+        })
+        .catch((err) => {
+          this.setState({ fetching: false, fetchFail: err });
         });
-        this.setState({
-          fetching: false,
-          news: res,
-          newsChange: JSON.parse(JSON.stringify(res)),
-          edits
-        });
-      })
-      .catch((err) => {
-        this.setState({ fetching: false, fetchFail: err });
-      });
+    });
   }
 
   handleAdd = () => {
@@ -318,16 +320,21 @@ export class News extends Component {
       .catch((err) => {});
   };
 
-  handleEditContent = (index) => {};
+  handleEditContent = (index, id, title) => {
+    const identify = { id, title };
+    this.props.history.push(`news/edit`, {
+      identify
+    });
+  };
 
   render() {
     const { news, newsChange, edits, fetching, fetchFail } = this.state;
     return (
       <>
         <header>
-          <h1>ข่าวสาร</h1>
+          <h1>ข่าวประชาสัมพันธ์</h1>
         </header>
-        <NewsEditor />
+
         <Table striped bordered hover size="sm" className="text-center">
           <thead>
             <tr>
@@ -459,7 +466,9 @@ export class News extends Component {
                               <Button
                                 variant="outline-dark"
                                 className="xs mr-1"
-                                onClick={() => this.handleEditContent(i)}
+                                onClick={() =>
+                                  this.handleEditContent(i, item.id, item.title)
+                                }
                               >
                                 <FaPenSquare />
                               </Button>

@@ -44,7 +44,7 @@ export class Navbar extends Component {
                   </MenuItem>
                 </SubMenu>
                 <MenuItem icon={<FaNewspaper />}>
-                  <Link to="/news">ข่าวสาร</Link>
+                  <Link to="/news">ข่าวประชาสัมพันธ์</Link>
                 </MenuItem>
                 <MenuItem icon={<FaPhotoVideo />}>
                   <Link to="/gallery">แกลเลอรี</Link>

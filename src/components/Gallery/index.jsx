@@ -37,33 +37,35 @@ export class Gallery extends Component {
     galleryChange: []
   };
 
-  async componentDidMount() {
-    getGallery(await this.context.getToken())
-      .then((res) => {
-        // console.log(res);
-        const edits = res.map((item) => {
-          return {
-            edit: false,
-            delete: false,
-            add: false,
-            _public: false,
-            processing: false,
-            publicError: "",
-            editError: "",
-            addError: "",
-            deleteError: ""
-          };
+  componentDidMount() {
+    this.context.getToken().then((token) => {
+      getGallery(token)
+        .then((res) => {
+          // console.log(res);
+          const edits = res.map((item) => {
+            return {
+              edit: false,
+              delete: false,
+              add: false,
+              _public: false,
+              processing: false,
+              publicError: "",
+              editError: "",
+              addError: "",
+              deleteError: ""
+            };
+          });
+          this.setState({
+            fetching: false,
+            gallery: res,
+            galleryChange: JSON.parse(JSON.stringify(res)),
+            edits
+          });
+        })
+        .catch((err) => {
+          this.setState({ fetching: false, fetchFail: err });
         });
-        this.setState({
-          fetching: false,
-          gallery: res,
-          galleryChange: JSON.parse(JSON.stringify(res)),
-          edits
-        });
-      })
-      .catch((err) => {
-        this.setState({ fetching: false, fetchFail: err });
-      });
+    });
   }
 
   handleAdd = () => {

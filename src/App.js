@@ -17,6 +17,7 @@ import Notfound from "./components/Notfound";
 
 import { firebaseAuthContext } from "./providers/AuthProvider";
 import { GalleryUpload } from "./components/Gallery/GalleryUpload";
+import NewsEditor from "./components/News/NewsEditor";
 
 function App() {
   const { isLoggedIn, initial } = useContext(firebaseAuthContext);
@@ -94,6 +95,13 @@ function App() {
             isLoggedIn={isLoggedIn}
             setLastPage={handlePageClick}
             exact
+            path="/news/edit"
+            component={NewsEditor}
+          />
+          <PrivateRoute
+            isLoggedIn={isLoggedIn}
+            setLastPage={handlePageClick}
+            exact
             path="/asks"
             component={Asks}
           />
@@ -120,7 +128,7 @@ function App() {
 
 const RedirectComponent = ({ isLoggedIn, getLastPage, ...props }) => {
   if (isLoggedIn) {
-    // console.log("Already logged in, Redirect to last page.");
+    console.log("Already logged in, Redirect to last page.");
     const lastPage = getLastPage();
     return <Redirect to={lastPage} />;
   }
